@@ -1,0 +1,13 @@
+
+/* Define empty space */
+.space300 { margin-top: 300px; }
+
+
+/* needed for html formatting */
+.right{
+    float:right;
+}
+
+.left{
+    float:left;
+}

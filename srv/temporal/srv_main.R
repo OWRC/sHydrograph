@@ -1,0 +1,70 @@
+
+
+# observe({
+#   input$mouseup
+#   isolate({
+#     if (!is.null(v$df)){
+#       rng <- input$plt.raw_date_window # dummy variable used to trigger below
+#     }
+#   })
+# })
+
+observe({
+  y <- colnames(v$df$plt)[2:ncol(v$df$plt)]
+  x <- unname(xr.NLong[y])
+  if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
+  updateCheckboxGroupInput(session, "chkData", choices=x, select=x) #tail(x,1))
+})
+
+
+output$info.main <- renderUI({
+  DTb <- as.Date(strftime(req(input$plt.raw_date_window[[1]]), "%Y-%m-%d"))
+  DTe <- as.Date(strftime(req(input$plt.raw_date_window[[2]]), "%Y-%m-%d"))
+  vis <- input$chkData
+  isolate({
+    if (!is.null(v$df$plt)){
+      df2 <- subset(v$df$plt, Date>=DTb & Date<=DTe)
+      nam <- unname(xr.NLong[colnames(v$df$plt)[2:ncol(v$df$plt)]])
+      stat <- colMeans(df2[2:ncol(v$df$plt)], na.rm = TRUE) #*(xr.step[xr.Nshrt[nam]]*364.24+1)
+      
+      df2 <- df2[c('Date',xr.Nshrt[vis])]
+      df2 <- df2[rowSums(is.na(df2)) != ncol(df2)-1, ]
+      ndat <- nrow(df2)
+
+      shiny::HTML(paste0(
+        '<body>',
+        v$info.html, br(),
+
+        loc.info('Visible data range:',ndat,DTb,DTe,stat,nam),
+        '</body>'
+      ))
+    }
+  })
+})
+
+
+
+#####################
+## plots
+#####################
+output$plt.raw <- renderDygraph({
+  req(input$chkData)
+  if (!is.null(v$df$plt)){
+    atyld <- xr.NLong[["AtmosYld"]]
+    xl <- input$chkData
+    xs <- as.character(xr.Nshrt[xl])
+    qxts <- xts(v$df$plt[,xs], order.by = v$df$plt$Date)
+    colnames(qxts) <- xs
+    dg <- dygraph(qxts) %>%
+      dyOptions(retainDateWindow = TRUE, axisLineWidth = 1.5) %>% #, fillGraph = TRUE, stepPlot = as.logical(xr.step[xs])) %>%
+      dyAxis(name='y', label=as.character(xl[xl != atyld]), axisLabelWidth=100) %>%
+      dyRangeSelector(strokeColor = '', height=80) %>%
+      dyLegend(show = "follow")
+    if (atyld %in% xl) {
+      dg <- dg %>% 
+        dySeries("AtmosYld", axis = 'y2', stepPlot = TRUE) %>% #, fillGraph = TRUE) %>% #"#008080"
+        dyAxis('y2', label=atyld, valueRange = c(200, 0))
+    }
+    return(dg)
+  }
+})

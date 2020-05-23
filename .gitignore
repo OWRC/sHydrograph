@@ -37,3 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+\bak
+\test
+*.Rproj
+YCDB_query.R

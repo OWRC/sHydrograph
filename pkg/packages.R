@@ -1,0 +1,27 @@
+### sHydrograph packages
+
+library(shiny)
+library(shinyjs)
+library(markdown)
+library(jsonlite)
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(lmomco)
+library(ggplot2)
+library(scales)
+library(date)
+library(lubridate)
+library(reshape2)
+library(zoo)
+library(dygraphs)
+library(xts)
+library(fs)
+
+
+source("pkg/js.R", local = TRUE)
+source("pkg/html.R", local = TRUE)
+source("pkg/xref.R", local = TRUE)
+source("func/frequency_analysis.R", local = TRUE)
+source("pkg/YCDB_interval_clean.R", local = TRUE)
+source("pkg/YCDB_API_query.R", local = TRUE)
