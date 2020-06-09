@@ -5,8 +5,8 @@
 # Well hydrograph tool
 #
 # By M. Marchildon
-# v.0.6
-# May 2020
+# v.0.6.1
+# June 2020
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
@@ -35,7 +35,7 @@ shinyApp(
         list(tags$head(HTML('<link rel="icon", href="favicon.png",type="image/png"/>'))),
         div(style="padding: 1px 0px; height: 0px", titlePanel(title="", windowTitle="sHydrograph")),
         navbarPage(
-          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v0.5"),
+          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v0.6.1"),
           source(file.path("ui", "ui_hydrograph.R"), local = TRUE)$value,
           source(file.path("ui", "ui_trends.R"), local = TRUE)$value,
           source(file.path("ui", "ui_stats.R"), local = TRUE)$value,
@@ -57,7 +57,7 @@ shinyApp(
     ### Load station ID:
     # Here are a few to try out: 1) Cannington OW99-2D (Int ID = -1261492764); 2) Aurora MW 1 (Int ID = -373572324); 
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
-    collect_interval(-498465806) #(-373572324) #(-1261492764) #(148842) #(-224406311) #(-130212055) #
+    collect_interval(-373572324) #(-498465806) #(-373572324) #(-1261492764) #(148842) #(-224406311) #(-130212055) #
     # observe({
     #   query <- parseQueryString(session$clientData$url_search)
     #   if (!is.null(query[['i']]) & !is.na(as.numeric(query[['i']]))) {

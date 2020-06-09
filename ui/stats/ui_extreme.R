@@ -15,9 +15,17 @@ fluidPage(
       actionButton('ax.regen',"Regenerate"),
       width=3
     ),
-    column(9, plotOutput('ax.h')),
-    column(9, plotOutput('ax.dist'),
-    shiny::includeMarkdown("md/rightclick.md"))
-  ), br(),
-  shiny::includeMarkdown("md/extreme.md")
+    mainPanel(
+      plotOutput('ax.h', height='600px'),
+      column(6,
+             plotOutput('ax.dist', height='200px')
+      ),
+      column(6,
+             plotOutput('ax.hist', height='200px')
+      ), br(),
+      shiny::includeMarkdown("md/rightclick.md"),
+      shiny::includeMarkdown("md/extreme.md"),
+      width=9
+    )
+  )
 )

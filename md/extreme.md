@@ -8,3 +8,11 @@ Assumptions include:
 - Stationarity: no significant background signal has been changing over the long-term. *This will be violated under a changing climate, a changing pumping regime, etc.*
 - Independence: originally, this analysis is to be applied to event-based phenomenon (i.e., rainfall) where it is assumed that all events are independent of eachother. *Groundwater monitoring is contiuous and thus violates this assumption.*
 - the statistical characteristics of the sample represent those of the population.
+
+
+#### Peak flow frequency
+Peak flow frequency curves were modified (with gratitude) from [headwateranalytics.com](http://www.headwateranalytics.com/blog/flood-frequency-analysis-in-r) *(accessed December, 2016)*.
+
+The method allows for the use of 5 distributions: Log-Pearson type 3 *(default)*, Weibull, Gumbel, Generalized Extreme Value (GEV), and the three-parameter lognormal models. (The user may change the distribution and refresh the plots.)
+
+By default, 90% confidence intervals are then plotted based in the bootstrap technique from 10,000 samples assuming a Log-Pearson III distribution.

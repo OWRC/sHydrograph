@@ -34,7 +34,7 @@ summary_annual <- function(df,title=NULL,relative=FALSE){
   if(!relative){
     p <- ggplot(df, aes(year,stat)) +
       theme_bw() +
-      geom_step() + 
+      geom_step(direction = "mid") + 
       geom_hline(yintercept = mP, size=1, linetype='dotted') +
       geom_label(aes(x = min(df$year), y=mP, label=paste0("mean ",ylab," = ",round(mP,0))), hjust=0,vjust=-.5,fill = "white") +
       labs(y = ylab, x=NULL)

@@ -149,23 +149,23 @@ frequencyPlot <- function(series, ci, title=NULL, ylab=NULL, inverted=FALSE) {
   
   xbreaks <- c(0.002,0.01,0.1,0.25,0.5,0.8,0.9,0.95,0.975,0.99,0.995,0.998)
   rnge <- range(series, ci[,ncol(ci)], na.rm=TRUE)
-  ybreaks <- NULL
-  if (log10(rnge[2])-log10(rnge[2]-rnge[1])<1.7) {
-    log.range <- log10(rnge) #ci[,1]
-    lower <- 10^floor(log.range[1])
-    upper <- 10^ceiling(log.range[2])
-    cap <- lower
-    while(cap < upper) {
-      ybreaks <- c(ybreaks, seq(cap, cap*9, by = cap))
-      cap <- cap * 10
-    }    
-  }
+  # ybreaks <- NULL
+  # if (log10(rnge[2])-log10(rnge[2]-rnge[1])<0.73) { # <1.7) {
+  #   log.range <- log10(rnge) #ci[,1]
+  #   lower <- 10^floor(log.range[1])
+  #   upper <- 10^ceiling(log.range[2])
+  #   cap <- lower
+  #   while(cap < upper) {
+  #     ybreaks <- c(ybreaks, seq(cap, cap*9, by = cap))
+  #     cap <- cap * 10
+  #   }    
+  # }
   
   # now plot
   p <- ggplot(bwpeaks) + 
     geom_point(aes(x=PROB, y=Val)) + 
-    theme_bw() + 
-    # scale_y_continuous(trans="log10", breaks=ybreaks, name=ylab) +
+    theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
+    scale_y_continuous(trans="log10", name=ylab) +
     scale_x_continuous(trans=probability_trans(distribution="norm"),
                        breaks=xbreaks, labels=signif(prob2T(xbreaks), digits=3),
                        name="Return period (years)") +
@@ -173,11 +173,11 @@ frequencyPlot <- function(series, ci, title=NULL, ylab=NULL, inverted=FALSE) {
     geom_line(data=ci, aes(x=nep, y=lower), color="red", lty=2) +
     geom_line(data=ci, aes(x=nep, y=upper), color="red", lty=2)
   
-  if(!is.null(ybreaks)) {
-    p <- p + scale_y_continuous(trans="log10", breaks=ybreaks, name=ylab)
-  } else {
-    p <- p + ylab(ylab)
-  }
+  # if(!is.null(ybreaks)) {
+  #   p <- p + scale_y_continuous(trans="log10", name=ylab, breaks=ybreaks)
+  # } else {
+  #   p <- p + ylab(ylab)
+  # }
   if(!is.null(title)) p <- p + ggtitle(title)
   
   return(p)

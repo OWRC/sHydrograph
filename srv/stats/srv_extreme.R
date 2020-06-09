@@ -32,7 +32,7 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=
   }
 }
 
-extreme_histogram <- function(hds, xlab, ismn=FALSE, title=NULL){
+extreme_density <- function(hds, xlab, ismn=FALSE, title=NULL){
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
   if (ismn) {
     df <- data.frame(peak=aggregate(Val ~ yr, hds, min)[,2])
@@ -43,7 +43,42 @@ extreme_histogram <- function(hds, xlab, ismn=FALSE, title=NULL){
   p <- ggplot(df,aes(peak)) +
     theme_bw() +
     geom_density(colour='blue', size=1, fill='blue', alpha=0.2) +
+    geom_rug() +
     labs(x=xlab, title=NULL)
+  
+  if(!is.null(title)) p <- p + ggtitle(title)
+  
+  return(p)
+}
+
+extreme_histogram <- function(hds, xs, ismn=FALSE, title=NULL){
+  hds$yr <- as.numeric(format(hds$Date, "%Y"))
+  
+  if (ismn) {
+    df <- hds %>% 
+      select(c(Date,yr,!!ensym(xs))) %>%
+      drop_na() %>%
+      group_by(yr) %>% 
+      summarise(v = min(!!ensym(xs),na.rm=TRUE), date = Date[which.min(!!ensym(xs))]) %>%
+      ungroup()
+  } else {
+    df <- hds %>% 
+      select(c(Date,yr,!!ensym(xs))) %>%
+      drop_na() %>%
+      group_by(yr) %>% 
+      summarise(v = max(!!ensym(xs),na.rm=TRUE), date = Date[which.max(!!ensym(xs))]) %>%
+      ungroup() 
+  }
+  
+  df$mo <- as.numeric(format(df$date, "%m"))
+  df$mnt <- format(df$date, "%b")
+  df$mnt <- ordered(df$mnt, levels = c('Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'))
+  
+  p <- ggplot(df,aes(mnt)) +
+    theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
+    geom_histogram(stat='count') +
+    scale_x_discrete(drop = FALSE) +
+    labs(x=NULL, title=NULL)
   
   if(!is.null(title)) p <- p + ggtitle(title)
   
@@ -97,7 +132,22 @@ output$ax.dist <- renderPlot({
       df1 <- ax.screen(v$df$orig, xi)
       
       ismn <- input$ax.mnmx=='min'
-      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(df1, xlab, ismn)})
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(df1, xlab, ismn)})
+    }
+  )
+})
+
+output$ax.hist <- renderPlot({
+  req(input$radio.ax)
+  input$ax.regen
+  isolate(
+    if (!is.null(v$df$orig)){
+      xl <- input$radio.ax
+      xs <- as.character(xr.Nshrt[xl])
+      xi <- as.numeric(xr.Nindx[xs])
+      
+      ismn <- input$ax.mnmx=='min'
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(v$df$plt, xs, ismn)})
     }
   )
 })
