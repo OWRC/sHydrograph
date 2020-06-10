@@ -11,7 +11,7 @@ observe(updateDateRangeInput(session, "an.rng", start = v$DTb, end = v$DTe, min 
 ########################################################
 # annual timeseries summary
 ########################################################
-summary_annual <- function(df,title=NULL,relative=FALSE){
+summary_annual <- function(df,relative=FALSE){
   xl <- input$radio.an
   xs <- as.character(xr.Nshrt[xl])
   ylab <- xr.NLong[[xs]]
@@ -36,7 +36,7 @@ summary_annual <- function(df,title=NULL,relative=FALSE){
       theme_bw() +
       geom_step(direction = "mid") + 
       geom_hline(yintercept = mP, size=1, linetype='dotted') +
-      geom_label(aes(x = min(df$year), y=mP, label=paste0("mean ",ylab," = ",round(mP,0))), hjust=0,vjust=-.5,fill = "white") +
+      geom_label(aes(x = min(year), y=mP, label=paste0("mean ",ylab," = ",round(mP,0))), hjust=0,vjust=-.5,fill = "white") +
       labs(y = ylab, x=NULL)
   }else{
     df$stat <- df$stat - mP
@@ -63,6 +63,6 @@ output$plt.an.tot <- renderPlot({
 output$plt.an.diff <- renderPlot({
   req(input$radio.an)
   if (!is.null(v$df$plt)){
-    summary_annual(v$df$plt[v$df$plt$Date >= input$an.rng[1] & v$df$plt$Date <= input$an.rng[2],],NULL,TRUE)
+    summary_annual(v$df$plt[v$df$plt$Date >= input$an.rng[1] & v$df$plt$Date <= input$an.rng[2],],TRUE)
   }
 })

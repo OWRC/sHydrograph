@@ -58,7 +58,7 @@ output$plt.raw <- renderDygraph({
     dg <- dygraph(qxts) %>%
       dyOptions(retainDateWindow = TRUE, axisLineWidth = 1.5) %>% #, fillGraph = TRUE, stepPlot = as.logical(xr.step[xs])) %>%
       dyAxis(name='y', label=as.character(xl[xl != atyld]), axisLabelWidth=100) %>%
-      dyRangeSelector(strokeColor = '', height=80) %>%
+      dyRangeSelector(fillColor = '', height=80) %>%
       dyLegend(show = "follow")
     if (atyld %in% xl) {
       dg <- dg %>% 
