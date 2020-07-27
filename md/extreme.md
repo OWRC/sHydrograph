@@ -6,7 +6,7 @@ The annual extreme plotting presented above has been taken directly from peak fl
 Assumptions include:
 
 - Stationarity: no significant background signal has been changing over the long-term. *This will be violated under a changing climate, a changing pumping regime, etc.*
-- Independence: originally, this analysis is to be applied to event-based phenomenon (i.e., rainfall) where it is assumed that all events are independent of eachother. *Groundwater monitoring is contiuous and thus violates this assumption.*
+- Independence: originally, this analysis is to be applied to event-based phenomenon (i.e., rainfall) where it is assumed that all events are independent of each other. *Groundwater monitoring is continuous and thus violates this assumption.*
 - the statistical characteristics of the sample represent those of the population.
 
 
