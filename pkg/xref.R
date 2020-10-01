@@ -2,16 +2,17 @@
 
 pltcol <- c("#ef8a62","#43a2ca")
 
-xr.Ignore <- c(163,369,447,449,608,609,611,612,645,748,761,762,763,764,765,70813,70899,70903,70977)
+xr.Ignore <- c(163,369,447,449,608,609,611,612,645,748,761,762,763,764,765,70813,70899,70977)
 
-xr.RNDC <- c("551"="Precip","546"="Tmax", "547"="Tmin",
+xr.RNDC <- c("546"="Tmax", "547"="Tmin","551"="Precip", "554"="Stage",
              "628"="WtrLvl.s", "629"="WtrLvl", "70871"="Temp",
-             "71212"="AtmosYld") #, #"611"="Wlvlx", "612"="Wlvln",
+             "71212"="AtmosYld") #, #"611"="Wlvlx", "612"="Wlvln", 
 
 xr.Nindx <- setNames(names(xr.RNDC), unname(xr.RNDC)) #reverses above named list
 
 xr.NLong <- c(
     "Precip"="Precipitation (mm)",
+    "Stage"="Stage (masl)",
     "Tmax"="Daily max temperature (degC)", 
     "Tmin"="Daily min temperature (degC)",
     # "Wlvlx"="Water Level - Logger - Max (Compensated & Corrected)",
@@ -27,6 +28,7 @@ xr.Nshrt <- setNames(names(xr.NLong), unname(xr.NLong)) #reverses above named li
 
 xr.step <- c(
   "Precip"=TRUE,
+  "Stage"=FALSE,
   "Tmax"=FALSE, 
   "Tmin"=FALSE,
   # "Wlvlx"=FALSE,
