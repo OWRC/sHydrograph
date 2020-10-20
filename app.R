@@ -61,11 +61,13 @@ shinyApp(
     collect_interval(148466,5) #(-373572324) #(-498465806) #(-373572324) #(-1261492764) #(148842) #(-224406311) #(-130212055) #
     # observe({
     #   query <- parseQueryString(session$clientData$url_search)
+    #   # print(query)
     #   if (!is.null(query[['i']]) & !is.na(as.numeric(query[['i']]))) {
-    #     if (!is.null(query[['t']]) & !is.na(as.numeric(query[['t']]))) {
-    #       collect_interval(strtoi(query[['i']]),strtoi(query[['t']])) 
+    #     # collect_interval(strtoi(query[['i']]))
+    #     if ('t' %in% query) {
+    #       collect_interval(strtoi(query[['i']]),strtoi(query[['t']]))
     #     } else {
-    #       collect_interval(strtoi(query[['i']]))  
+    #       collect_interval(strtoi(query[['i']]))
     #     }
     #   } else {
     #     showNotification(paste0("Error: URL invalid."))
