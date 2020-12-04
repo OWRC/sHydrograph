@@ -15,6 +15,7 @@ observe({
   s <- x[x != "Temperature (Water) - Logger (degC)"]
   if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
+  if (is.null(v$scrn)) hide("chkScrn")
 })
 
 
@@ -66,8 +67,8 @@ output$plt.raw <- renderDygraph({
         dySeries("AtmosYld", axis = 'y2', stepPlot = TRUE) %>% #, fillGraph = TRUE) %>% #"#008080"
         dyAxis('y2', label=atyld, valueRange = c(200, 0))
     }  
-    
-    if ( !is.null(v$scrn) ) {
+  
+    if ( !is.null(v$scrn) && input$chkScrn ) {
       dd <- v$df$plt[,xs[xs!='AtmosYld']]
       nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
       xscr <- max(v$scrn)

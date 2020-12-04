@@ -58,21 +58,21 @@ shinyApp(
     ### http://shinyapps.canadacentral.cloudapp.azure.com:3838/sHydrograph/?i=
     # Here are a few to try out: 1) Cannington OW99-2D (Int ID = -1261492764); 2) Aurora MW 1 (Int ID = -373572324); 
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
-    # collect_interval(148842) #(-2056054271,5) #(-373572324) #(-498465806) #(-1261492764) #(-224406311) #(-130212055) #
-    observe({
-      query <- parseQueryString(session$clientData$url_search)
-      # print(query)
-      if (!is.null(query[['i']]) & !is.na(as.numeric(query[['i']]))) {
-        # collect_interval(strtoi(query[['i']]))
-        if ('t' %in% query) {
-          collect_interval(strtoi(query[['i']]),strtoi(query[['t']]))
-        } else {
-          collect_interval(strtoi(query[['i']]))
-        }
-      } else {
-        showNotification(paste0("Error: URL invalid."))
-      }
-    })
+    collect_interval(148842) #(-2056054271,5) #(-373572324) #(-498465806) #(-1261492764) #(-224406311) #(-130212055) #
+    # observe({
+    #   query <- parseQueryString(session$clientData$url_search)
+    #   # print(query)
+    #   if (!is.null(query[['i']]) & !is.na(as.numeric(query[['i']]))) {
+    #     # collect_interval(strtoi(query[['i']]))
+    #     if ('t' %in% query) {
+    #       collect_interval(strtoi(query[['i']]),strtoi(query[['t']]))
+    #     } else {
+    #       collect_interval(strtoi(query[['i']]))
+    #     }
+    #   } else {
+    #     showNotification(paste0("Error: URL invalid."))
+    #   }
+    # })
 
     ### sources:
     source(file.path("srv/temporal", "srv_main.R"), local = TRUE)$value
