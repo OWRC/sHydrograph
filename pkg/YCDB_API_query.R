@@ -32,7 +32,21 @@ qLocInfo <- function(API,LOC_ID){
   return(t1[t1$LID==LOC_ID,])
 }
 
-qIntName <- function(INT_ID){ fromJSON(sprintf(inamapi,INT_ID)) }
+qIntName <- function(INT_ID){ 
+  out <- tryCatch(
+    {
+      fromJSON(sprintf(inamapi,INT_ID))
+    },
+    error=function(cond) {
+      return("")
+    },
+    warning=function(cond) {
+      return("")
+    },
+    finally={}
+  )
+  return(out)
+}
 
 qIntScreen <- function(INT_ID){ 
   out <- tryCatch(
@@ -62,7 +76,20 @@ qTemporal_byLOC_ID <- function(lAPI,iAPI,LOC_ID){
 
 # df <- qTemporal_json("C:/Users/mason/OneDrive/R/web_ormgp/sMet/test/-1741125310.json")
 qTemporal_json <- function(fp) {
-  df <- fromJSON(fp)
+  df <- tryCatch(
+    {
+      fromJSON(fp)
+    },
+    error=function(cond) {
+      showNotification(paste0("Error: invalid interval ID"))
+      return(NULL)
+    },
+    warning=function(cond) {
+      showNotification(paste0("Error: invalid interval ID"))
+      return(NULL)
+    },
+    finally={}
+  )
   return(qTemporal_clean(df))
 }
 
