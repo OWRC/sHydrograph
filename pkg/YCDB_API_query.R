@@ -4,15 +4,16 @@
 # in support of sHydrograph
 # By M. Marchildon
 #
-# Feb, 2020
+# Dec, 2020
 ##########################################################
 
 
 ###########################################################################################
 ## API addresses
 ###########################################################################################
-ldbc <- 'https://api.oakridgeswater.ca/api/loc_met/' # 'https://camcfunctions.azurewebsites.net/api/loc_met/' # 'https://functions.oakridgeswater.ca/api/loc_met/'
+# ldbc <- 'https://api.oakridgeswater.ca/api/loc_met/' # 'https://camcfunctions.azurewebsites.net/api/loc_met/' # 'https://functions.oakridgeswater.ca/api/loc_met/'
 idbc <- 'https://api.oakridgeswater.ca/api/intgen/?t=%d&i=%d'
+sdbc <- 'https://api.oakridgeswater.ca/api/intscreen?i=%d'
 inamapi <- 'https://api.oakridgeswater.ca/api/intnam/?i=%d'
 
 
@@ -32,6 +33,22 @@ qLocInfo <- function(API,LOC_ID){
 }
 
 qIntName <- function(INT_ID){ fromJSON(sprintf(inamapi,INT_ID)) }
+
+qIntScreen <- function(INT_ID){ 
+  out <- tryCatch(
+    {
+      fromJSON(sprintf(sdbc,INT_ID))
+    },
+    error=function(cond) {
+      return(NULL)
+    },
+    warning=function(cond) {
+      return(NULL)
+    },
+    finally={}
+  )
+  return(out)  
+}
 
 ###########################################################################################
 ## temporal Query

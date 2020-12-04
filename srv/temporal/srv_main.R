@@ -12,8 +12,9 @@
 observe({
   y <- colnames(v$df$plt)[2:ncol(v$df$plt)]
   x <- unname(xr.NLong[y])
+  s <- x[x != "Temperature (Water) - Logger (degC)"]
   if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
-  updateCheckboxGroupInput(session, "chkData", choices=x, select=x) #tail(x,1))
+  updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
 })
 
 
@@ -64,7 +65,23 @@ output$plt.raw <- renderDygraph({
       dg <- dg %>% 
         dySeries("AtmosYld", axis = 'y2', stepPlot = TRUE) %>% #, fillGraph = TRUE) %>% #"#008080"
         dyAxis('y2', label=atyld, valueRange = c(200, 0))
+    }  
+    
+    if ( !is.null(v$scrn) ) {
+      dd <- v$df$plt[,xs[xs!='AtmosYld']]
+      nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
+      xscr <- max(v$scrn)
+      buf <- .05*(xscr-nscr)
+      dg <- dg %>% dyAxis("y", valueRange = c(nscr-buf, xscr+buf))
+      
+      spc <- strrep(" ",50)
+      spcs <- ''
+      for (p in names(v$scrn)) {
+        dg <- dg %>% dyLimit(v$scrn[[p]], label=paste0(spcs,p), color = "grey22")
+        spcs = paste0(spcs,spc)
+      }      
     }
+
     return(dg)
   }
 })
