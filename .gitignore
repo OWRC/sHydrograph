@@ -42,3 +42,4 @@ vignettes/*.pdf
 \test
 *.Rproj
 YCDB_query.R
+YCDB_API_query.R
