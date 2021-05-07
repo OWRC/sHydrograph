@@ -8,3 +8,7 @@ output$hdr.an <- renderUI({shiny::HTML("<h1>Annual summary</h1>")})
 output$hdr.hl <- renderUI({shiny::HTML("<h1>High-Low recurrence</h1>")})
 
 output$hdr.ax <- renderUI({shiny::HTML("<h1>Annual extreme</h1>")})
+
+output$hdr.distr.m <- renderUI({shiny::HTML("<h1>Monthly Densities</h1>")})
+
+output$hdr.distr.d <- renderUI({shiny::HTML("<h1>Generalized Additive Model</h1>")})

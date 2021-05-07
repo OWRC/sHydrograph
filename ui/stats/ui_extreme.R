@@ -1,6 +1,9 @@
 fluidPage(
   title = 'sHydrograph frequency of annual extremes',
   fluidRow(
+    htmlOutput("hdr.ax")
+  ), hr(),
+  fluidRow(
     sidebarPanel(
       radioButtons("radio.ax", "Choose data type:",choices=c("dummy")), hr(),
       h5('Click "Regenerate" after making changes below'),
