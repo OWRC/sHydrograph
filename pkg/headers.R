@@ -11,4 +11,6 @@ output$hdr.ax <- renderUI({shiny::HTML("<h1>Annual extreme</h1>")})
 
 output$hdr.distr.m <- renderUI({shiny::HTML("<h1>Monthly Densities</h1>")})
 
-output$hdr.distr.d <- renderUI({shiny::HTML("<h1>Generalized Additive Model</h1>")})
+output$hdr.distr.gam <- renderUI({shiny::HTML("<h1>Generalized Additive Model</h1>")})
+
+print("headers loaded")

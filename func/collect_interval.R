@@ -18,3 +18,6 @@ collect_interval <- function(INT_ID,vTemporal=2) {
   shinyjs::hide(id = "loading-content", anim = TRUE, animType = "fade")
   shinyjs::show("app-content")
 }
+
+
+print("collect_interval loaded")

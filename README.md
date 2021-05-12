@@ -14,6 +14,7 @@ Mason Marchildon P.Eng M.ASc, Hydrologist with the [Oak Ridges Moraine Groundwat
 **version 0.8 - April 2021**
 
 * added (local) DB improvements
+* added GAM and monthly distributions
 
 **version 0.7 - Dec 2020**
 

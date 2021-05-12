@@ -24,8 +24,9 @@ source("pkg/js.R", local = TRUE)
 source("pkg/html.R", local = TRUE)
 source("pkg/xref.R", local = TRUE)
 source("func/frequency_analysis.R", local = TRUE)
-source("pkg/YCDB_interval_clean.R", local = TRUE)
-source("pkg/YCDB_query.R", local = TRUE)
+source("func/gam.R", local = TRUE)
+source("func/YCDB_interval_clean.R", local = TRUE)
+source("func/YCDB_API_query.R", local = TRUE)
 
 
 
