@@ -5,6 +5,22 @@ observe({
 })
 
 
+applyColour <- function(chkP,p,xs){
+  df <- v$df$plt %>% 
+    select(c(Date,!!ensym(xs))) %>%
+    drop_na() %>%        
+    mutate(doy=as.numeric(strftime(Date, format="%j")),
+           year=as.factor(strftime(Date, format="%Y")),
+           dateday=as.Date(doy, origin = "2016-01-01"))
+  
+  if (chkP) {
+    p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year))
+  } else {
+    p + geom_point(data=df,aes(dateday,!!ensym(xs)),size=1, position = "jitter", alpha=0.2)
+  }
+}
+
+
 output$distr.naive <- renderPlot({
   req(input$radio.distr.gam)
   if (!is.null(v$df$orig)) {
@@ -36,18 +52,12 @@ output$distr.naive <- renderPlot({
                    fun.args = list(mult = 1),
                    geom = 'smooth', se = TRUE, color='#f7f7f7', fill='#998ec3',alpha=.75) +
       
-      geom_point(size=1, position = "jitter", alpha=0.2) + 
-      
       # geom_smooth(method = "gam", formula = y ~s(x, bs = "ps"), na.rm=TRUE,fill='black',level=.95)  +
       
       scale_x_date(date_labels = "%b", date_minor_breaks = "1 month") +
       labs(title=v$title,y=xl)
     
-    if (chkP) {
-      p +  geom_point(aes(color=year), size=2)
-    } else {
-      p
-    }
+    applyColour(chkP,p,xs)
   }
 })
 
@@ -64,17 +74,6 @@ output$distr.gam <- renderPlot({
       select(doy,val) %>%
       GAM(k=k) + labs(title=v$title,y=xl)
     
-    if (chkP) {
-      df <- v$df$plt %>% 
-        select(c(Date,!!ensym(xs))) %>%
-        drop_na() %>%        
-        mutate(doy=as.numeric(strftime(Date, format="%j")),
-                                year=as.factor(strftime(Date, format="%Y")),
-                                dateday=as.Date(doy, origin = "2016-01-01"))
-
-      p + geom_point(data=df, aes(dateday,!!ensym(xs),color=year), size=2)
-    } else {
-      p
-    }
+    applyColour(chkP,p,xs)
   }
 })

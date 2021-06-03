@@ -7,7 +7,7 @@ fluidPage(
     sidebarPanel(
       radioButtons("radio.distr.gam", "Choose data type:",choices=c("dummy")),
       numericInput('distr.gam.k','basis dimension of the spline (k)',12,min=0,max=3000),
-      checkboxInput('distr.gam.pnts', 'categorize points by year'),
+      checkboxInput('distr.gam.pnts', 'categorize by year'),
       width=3
     ),
     mainPanel(

@@ -69,7 +69,7 @@ GAM <- function(df, k=20, N=10000) {
 
   # scale the standard errors to yield the simultaneous interval; here we calculate the critical value for a 95% simultaneous confidence interval/band
   scale95 <- quantile(masd, prob = 0.95, type = 8) # 95% simultaneous confidence interval for a penalised spline
-  scale50 <- quantile(masd, prob = 0.5, type = 8) # 95% simultaneous confidence interval for a penalised spline
+  scale50 <- quantile(masd, prob = 0.5, type = 8) # 50% simultaneous confidence interval for a penalised spline
   
   # calculate the simultaneous confidence interval
   # Now that we have the critical value, we can calculate the simultaneous confidence interval. In the code block below I first add the grid of values (newd) to the fitted values and standard errors at those new values and then augment this with upper and lower limits for a 95% simultaneous confidence interval (uprS and lwrS), as well as the usual 95% point-wise intervals for comparison (uprP and lwrP).
@@ -92,8 +92,6 @@ GAM <- function(df, k=20, N=10000) {
       # geom_ribbon(aes(ymin = lwr1, ymax = upr1), alpha = 0.2, fill = "blue") +
       geom_ribbon(aes(ymin = lwr2, ymax = upr2), alpha = 0.75, fill = "#f1a340") +
       geom_ribbon(aes(ymin = lwr1, ymax = upr1), alpha = 0.75, fill = "#998ec3") +
-     
-      geom_point(data=df,aes(as.Date(doy, origin = "2016-01-01"),val),size=1, position = "jitter", alpha=0.2) +
     
       annotate("text", as.Date("2016-01-01"), -Inf, label = txt, hjust = 0, vjust = -1) +
       

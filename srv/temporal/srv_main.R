@@ -71,7 +71,7 @@ output$plt.raw <- renderDygraph({
     if ( !is.null(v$scrn) && input$chkScrn ) {
       dd <- v$df$plt[,xs[xs!='AtmosYld']]
       nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
-      xscr <- max(v$scrn)
+      xscr <- max(c(max(dd[dd>0],na.rm=TRUE),max(v$scrn)))
       buf <- .05*(xscr-nscr)
       dg <- dg %>% dyAxis("y", valueRange = c(nscr-buf, xscr+buf))
       

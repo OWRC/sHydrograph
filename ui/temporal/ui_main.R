@@ -14,6 +14,7 @@ fluidPage(
     ),
     mainPanel(
       dygraphOutput("plt.raw"),
+      # shiny::includeMarkdown("md/atmosYield.md"),
       width = 10
     )
   )
