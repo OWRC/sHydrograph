@@ -2,6 +2,8 @@
 qTemporal_clean <- function(df) {
   df <- df[!(df$RDNC %in% xr.Ignore),]
   
+  if (!('RDTC' %in% colnames(df))) { df['RDTC'] <- NA }
+  
   # convert to dailies
   df <- df %>% 
     mutate(Date = zoo::as.Date(Date)) %>%
