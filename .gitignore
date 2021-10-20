@@ -4,6 +4,7 @@
 
 # Session Data files
 .RData
+.Rproj 
 
 # User-specific files
 .Ruserdata
@@ -40,6 +41,5 @@ vignettes/*.pdf
 
 \bak
 \test
-*.Rproj
 YCDB_query.R
 YCDB_API_query.R
