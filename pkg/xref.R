@@ -26,14 +26,16 @@ xr.NLong <- c(
     "Tmax"="Daily max temperature (C)", 
     "Tmin"="Daily min temperature (C)",
     "Tmean"="Daily mean temperature (C)",
-    "Rain"="Rainfall (mm)",
-    "Snow"="Snowfall (mm)",
+    # "Rain"="Rainfall (mm)",
+    # "Snow"="Snowfall (mm)",
     "PackDepth"="Snowpack depth (cm)",
     # "Wlvlx"="Water Level - Logger - Max (Compensated & Corrected)",
     # "Wlvln"="Water Level - Logger - Min (Compensated & Corrected)",
     "WtrLvl.s"="Water Level - Manual - Static (masl)",
     "WtrLvl"="Water Level - Logger (Compensated & Corrected-masl)",
     "Temp"="Temperature (Water) - Logger (degC)",
+    "Rf"="Rainfall (mm)",
+    "Sm"="Snowmelt (mm)",
     "AtmosYld"="Atmospheric Yield (mm)",
     "StrmFlw"="Stream flow (cms)"
     )
@@ -51,6 +53,8 @@ xr.step <- c(
   "WtrLvl.s"=FALSE,
   "WtrLvl"=FALSE,
   "Temp"=FALSE,
+  "Rf"=TRUE,
+  "Sm"=TRUE,
   "AtmosYld"=TRUE,
   "StrmFlw"=TRUE
 )

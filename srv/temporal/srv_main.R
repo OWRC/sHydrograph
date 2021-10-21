@@ -52,21 +52,27 @@ output$info.main <- renderUI({
 output$plt.raw <- renderDygraph({
   req(input$chkData)
   if (!is.null(v$df$plt)){
-    atyld <- xr.NLong[["AtmosYld"]]
+    rf <- xr.NLong[["Rf"]]
+    sm <- xr.NLong[["Sm"]]
     xl <- input$chkData
     xs <- as.character(xr.Nshrt[xl])
     qxts <- xts(v$df$plt[,xs], order.by = v$df$plt$Date)
     colnames(qxts) <- xs
     dg <- dygraph(qxts) %>%
       dyOptions(retainDateWindow = TRUE, axisLineWidth = 1.5) %>% #, fillGraph = TRUE, stepPlot = as.logical(xr.step[xs])) %>%
-      dyAxis(name='y', label=as.character(xl[xl != atyld]), axisLabelWidth=100) %>%
+      dyAxis(name='y', label=as.character(xl[xl != rf & xl != sm]), axisLabelWidth=100) %>%
       dyRangeSelector(fillColor = '', height=80) %>%
       dyLegend(show = "follow")
-    if (atyld %in% xl) {
+    if (sm %in% xl) {
       dg <- dg %>% 
-        dySeries("AtmosYld", axis = 'y2', stepPlot = TRUE) %>% #, fillGraph = TRUE) %>% #"#008080"
-        dyAxis('y2', label=atyld, valueRange = c(200, 0))
-    }  
+        dySeries("Sm", axis = 'y2', stepPlot = TRUE, label = 'snowmelt') %>% #, fillGraph = TRUE) %>% #"#008080"
+        dyAxis('y2', label=sm, valueRange = c(200, 0))
+    }      
+    if (rf %in% xl) {
+      dg <- dg %>% 
+        dySeries("Rf", axis = 'y2', stepPlot = TRUE, label = 'rainfall') %>% #, fillGraph = TRUE) %>% #"#008080"
+        dyAxis('y2', label=rf, valueRange = c(200, 0))
+    }    
   
     if ( !is.null(v$scrn) && input$chkScrn ) {
       dd <- v$df$plt[,xs[xs!='AtmosYld']]

@@ -5,8 +5,8 @@
 # Well hydrograph tool
 #
 # By M. Marchildon
-# v.0.8
-# Dec 2020
+# v.0.9
+# Oct. 2021
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
@@ -58,7 +58,7 @@ shinyApp(
     ### http://shinyapps.canadacentral.cloudapp.azure.com:3838/sHydrograph/?i=
     # Here are a few to try out: 1) Cannington OW99-2D (Int ID = -1261492764); 2) Aurora MW 1 (Int ID = -373572324); 
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
-    collect_interval(1099646144) #("test/1099646144.json") #(-1741125310,3) #("test/-1741125310.txt") #(730800020) #(148842) #(-373572324) #(-2056054271,5) #(-373572324) #(-498465806) #(-1261492764) #(-224406311) #(-130212055) #
+    collect_interval(730800020) #1099646144) #("test/1099646144.json") #(-1741125310,3) #("test/-1741125310.txt") #(730800020) #(148842) #(-373572324) #(-2056054271,5) #(-373572324) #(-498465806) #(-1261492764) #(-224406311) #(-130212055) #
     # observe({
     #   query <- parseQueryString(session$clientData$url_search)
     #   # print(query)

@@ -14,6 +14,11 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     v$df <- qTemporal(INT_ID,vTemporal)
     v$DTb <- min(v$df$orig$Date)
     v$DTe <- max(v$df$orig$Date)
+    icrd <- qIntCoord(INT_ID)
+    # v$lat <- icrd$LAT
+    # v$lng <- icrd$LONG
+    dfinterp <- qInterp(icrd$LONG,icrd$LAT)
+    v$df$plt <- v$df$plt %>% inner_join(dfinterp %>% select(-c("Tx","Tn","Sf","Pa")), by="Date")
   }))
   shinyjs::hide(id = "loading-content", anim = TRUE, animType = "fade")
   shinyjs::show("app-content")

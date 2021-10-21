@@ -8,7 +8,7 @@ qTemporal_clean <- function(df) {
   df <- df %>% 
     mutate(Date = zoo::as.Date(Date)) %>%
     group_by(Date, RDNC, RDTC, unit) %>%
-    dplyr::summarise(Val = mean(Val)) %>% # grouping and summerizing needed to remove duplicate rows
+    dplyr::summarise(Val = mean(Val)) %>% # grouping and summarizing needed to remove duplicate rows
     ungroup()
   # View(df)
   

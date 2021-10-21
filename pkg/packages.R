@@ -18,6 +18,7 @@ library(zoo)
 library(dygraphs)
 library(xts)
 library(fs)
+require(curl)
 
 
 source("pkg/js.R", local = TRUE)
