@@ -2,9 +2,10 @@
 
 pltcol <- c("#ef8a62","#43a2ca")
 
-xr.Ignore <- c(163,369,447,449,608,609,611,612,633,645,748,758,760,761,762,763,764,765,860,861,10854,10859,70813,70868,70872,70899,70903,70977,71025,71026,71212)
+xr.Ignore <- c(163,369,449,608,609,611,612,633,645,748,758,760,761,762,763,764,765,860,861,10854,10859,70813,70868,70872,70899,70903,70977,71025,71026,71212)
 
-xr.RNDC <- c("546"="Tmax", 
+xr.RNDC <- c("447"="Pump",
+             "546"="Tmax", 
              "547"="Tmin", 
              "548"="Tmean",
              "549"="Rain",
@@ -21,6 +22,7 @@ xr.RNDC <- c("546"="Tmax",
 xr.Nindx <- setNames(names(xr.RNDC), unname(xr.RNDC)) #reverses above named list
 
 xr.NLong <- c(
+    "Pump"="Total Production (m3/d)",
     "Precip"="Precipitation (mm)",
     "Stage"="Stage (masl)",
     "Tmax"="Daily max temperature (C)", 
@@ -44,6 +46,7 @@ xr.Nshrt <- setNames(names(xr.NLong), unname(xr.NLong)) #reverses above named li
 
 
 xr.step <- c(
+  "Pump"=TRUE,
   "Precip"=TRUE,
   "Stage"=FALSE,
   "Tmax"=FALSE, 
@@ -64,6 +67,7 @@ xr.unit <- c(
   "3"="C",
   "6"="masl",
   "21"="mm",
+  "74"="m3/d",
   "159"="map uncal",
   "1001"="cms"
 )
