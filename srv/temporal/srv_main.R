@@ -62,8 +62,6 @@ qxts_series <- reactive({
   qxts <- xts(v$df$plt[,xs], order.by = v$df$plt$Date)
 })
 
-
-
 output$plt.raw <- renderDygraph({
   # dygraph(qxts_series()) %>%
   #   dyRangeSelector(dateWindow = r$rngselect+1)
@@ -80,26 +78,32 @@ output$plt.raw <- renderDygraph({
     colnames(qxts) <- xs
     dg <- dygraph(qxts)
 
-    y2max = 200
+    
+    y2max = 150
+    # dyMultiColumnGroup(c("Rf","Sm","Pump"), axis = 'y2')
     if (pp %in% xl) {
       dg <- dg %>%
-        dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production') 
+        # dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production')
+        dyBarSeries("Pump", axis = 'y2', color = "#e41a1cBF", label = 'production')
       y2max = max(v$df$plt[,xr.Nshrt[[pp]]], na.rm=TRUE) * 2
     }
     if (sm %in% xl) {
       dg <- dg %>%
-        dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
+        # dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
+        dyBarSeries("Sm", axis = 'y2', color = "#4daf4aBF", label = 'snowmelt')
     }
     if (rf %in% xl) {
       dg <- dg %>%
-        dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
-    }    
-    dg <- dg %>% 
+        # dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
+        dyBarSeries("Rf", axis = 'y2', color = "#377eb8BF", label = 'rainfall')
+    }
+    
+    dg <- dg %>%
       dyAxis('y', label=as.character(xl[xl != rf & xl != sm & xl != pp]), axisLabelWidth=100) %>%
       dyAxis('y2', label=as.character(xl[xl == rf | xl == sm | xl == pp]), valueRange = c(y2max, 0)) %>%
       dyRangeSelector(fillColor = '', height=40, dateWindow = rng, retainDateWindow = TRUE) %>%
       dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE) # %>%
-      # dyLegend(show = "follow")      
+      # dyLegend(show = "follow")
 
     
     if ( !is.null(v$scrn) && input$chkScrn ) {
@@ -122,11 +126,43 @@ output$plt.raw <- renderDygraph({
 })
 
 
+norm_series <- reactive({
+  req(rng <- input$dt.rng)
+  req(xl <- input$chkData)
+  xs <- as.character(xr.Nshrt[xl])
+
+  df <- v$df$plt %>% 
+           subset( Date >= rng[[1]]  &  Date <= rng[[2]] ) %>%
+           select("Date", xs) %>% 
+           gather("param", "val", -Date, na.rm=TRUE)
+  
+  df$grp <- mapvalues(df$param,xs,xr.group[xs])
+  df$param <- mapvalues(df$param,xs,xr.NLong[xs])
+  return(df)
+})
+
+
+# https://stackoverflow.com/questions/35806310/ggplot-plotting-layers-only-if-certain-criteria-are-met
+pick <- function(condition){ function(d) d %>% filter(!!enquo(condition)) }
 
 output$plt.print <- renderPlot({
   req(input$chkData)
+  req(rng <- input$dt.rng)
   if (!is.null(v$df$orig)){
-    v$df$orig %>%
-      ggplot(aes(Date,Val)) + geom_line(aes(colour=RDNC))
+    norm_series() %>%
+      ggplot(aes(Date,val)) + 
+        theme_bw() + theme(
+          axis.title=element_blank(), 
+          legend.title=element_blank(), 
+          strip.placement = "outside",
+          strip.background = element_blank()
+          ) +
+        geom_line(data = pick(grp == "Waterlevel (masl)"), aes(colour=param)) + 
+        # geom_col(data = pick(grp == c("Production (m³/d)","Precipitation (mm)")), aes(fill=param), position=position_stack()) +
+        geom_col(data = pick(grp == "Precipitation (mm)"), aes(fill=param), position=position_stack()) +
+        geom_col(data = pick(grp == "Production (m³/d)"), aes(fill=param), position=position_stack()) +
+        # facet_grid(rows = vars(grp), scales = "free") +
+        facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left") +
+        ggtitle(paste0(v$title,"\n",rng[[1]]," to ",rng[[2]]))
   }
 })

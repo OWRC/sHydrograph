@@ -22,8 +22,6 @@ xr.RNDC <- c("447"="Pump",
 xr.Nindx <- setNames(names(xr.RNDC), unname(xr.RNDC)) #reverses above named list
 
 xr.NLong <- c(
-    "Pump"="Production (m3/d)",
-    "Precip"="Precipitation (mm)",
     "Stage"="Stage (masl)",
     "Tmax"="Daily max temperature (C)", 
     "Tmin"="Daily min temperature (C)",
@@ -36,6 +34,8 @@ xr.NLong <- c(
     "WtrLvl.s"="Water Level - Manual - Static (masl)",
     "WtrLvl"="Water Level - Logger (Compensated & Corrected-masl)",
     "Temp"="Temperature (Water) - Logger (degC)",
+    "Pump"="Production (m3/d)",
+    "Precip"="Precipitation (mm)",
     "Rf"="Rainfall (mm)",
     "Sm"="Snowmelt (mm)",
     "AtmosYld"="Atmospheric Yield (mm)",
@@ -44,10 +44,27 @@ xr.NLong <- c(
 
 xr.Nshrt <- setNames(names(xr.NLong), unname(xr.NLong)) #reverses above named list
 
+xr.group <- c(
+  # "Stage"="Stage (masl)",
+  # "Tmax"="Daily max temperature (C)", 
+  # "Tmin"="Daily min temperature (C)",
+  # "Tmean"="Daily mean temperature (C)",
+  # # "Rain"="Rainfall (mm)",
+  # # "Snow"="Snowfall (mm)",
+  # "PackDepth"="Snowpack depth (cm)",
+  # # "Wlvlx"="Water Level - Logger - Max (Compensated & Corrected)",
+  # # "Wlvln"="Water Level - Logger - Min (Compensated & Corrected)",
+  "WtrLvl.s"="Waterlevel (masl)",
+  "WtrLvl"="Waterlevel (masl)",
+  "Temp"="Temperature (°C)",
+  "Pump"="Production (m³/d)",
+  "Precip"="Precipitation (mm)",
+  "Rf"="Precipitation (mm)",
+  "Sm"="Precipitation (mm)"
+)
+
 
 xr.step <- c(
-  "Pump"=TRUE,
-  "Precip"=TRUE,
   "Stage"=FALSE,
   "Tmax"=FALSE, 
   "Tmin"=FALSE,
@@ -56,6 +73,8 @@ xr.step <- c(
   "WtrLvl.s"=FALSE,
   "WtrLvl"=FALSE,
   "Temp"=FALSE,
+  "Pump"=TRUE,
+  "Precip"=TRUE,
   "Rf"=TRUE,
   "Sm"=TRUE,
   "AtmosYld"=TRUE,

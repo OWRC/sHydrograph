@@ -3,22 +3,27 @@
 ########################################################
 #### data table
 ########################################################
-df.filtered <- function(){
-  dat.out <- v$df$orig[v$df$orig$Date >= input$tabRng[1] & v$df$orig$Date <= input$tabRng[2],] # %>%
-    # spread(key=RDTC,value=colnames(v$df$orig)[4:ncol(v$df$orig)])
-  # row.has.na <- apply(dat.out[-1], 1, function(x){all(is.na(x))})
-  # return(dat.out[!row.has.na,])
-  # dat.out$Date <- as.Date(dat.out$Date)
-  # dat.out$Val <- as.numeric(dat.out$Val)
-  dat.out$RDNC <- mapvalues(dat.out$RDNC,names(xr.RNDC),xr.NLong[xr.RNDC])
-  dat.out$unit <- mapvalues(dat.out$unit,names(xr.unit),xr.unit)
-  dat.out <- dat.out[,c(1,2,5,4)] %>% #excluding RDTC
-    rename(
-      value = Val,
-      type = RDNC
+df.filtered <- reactive({
+  req(s <- input$tabRad )
+  if (s == 1) {
+    df <- v$df$orig[v$df$orig$Date >= input$tabRng[1] & v$df$orig$Date <= input$tabRng[2],]
+    df$RDNC <- mapvalues(df$RDNC,names(xr.RNDC),xr.NLong[xr.RNDC])
+    df$unit <- mapvalues(df$unit,names(xr.unit),xr.unit)
+    df <- df[,c(1,2,5,4)] %>% #excluding RDTC
+      rename(
+        value = Val,
+        type = RDNC
+      )
+    return(df)    
+  } else if (s == 2) {
+    col.from <- colnames(v$df$plt)
+    col.from <- col.from[col.from != "Date"]
+    return(
+      v$df$plt[v$df$plt$Date >= input$tabRng[1] & v$df$plt$Date <= input$tabRng[2],] %>%
+        rename_at(vars(col.from), function(x) xr.NLong[col.from])
     )
-  return(dat.out)
-}
+  }
+})
 
 observe(updateDateRangeInput(session, "tabRng", start = min(v$df$orig$Date), end = max(v$df$orig$Date), min = min(v$df$orig$Date), max = max(v$df$orig$Date)))
 
