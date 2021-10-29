@@ -22,7 +22,7 @@ xr.RNDC <- c("447"="Pump",
 xr.Nindx <- setNames(names(xr.RNDC), unname(xr.RNDC)) #reverses above named list
 
 xr.NLong <- c(
-    "Pump"="Total Production (m3/d)",
+    "Pump"="Production (m3/d)",
     "Precip"="Precipitation (mm)",
     "Stage"="Stage (masl)",
     "Tmax"="Daily max temperature (C)", 

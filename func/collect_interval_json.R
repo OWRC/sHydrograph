@@ -1,9 +1,4 @@
 
-v <- reactiveValues(title=NULL,df=NULL,scrn=NULL,DTb=NULL,DTe=NULL)
-
-
-
-
 
 ##############################################################
 ### collect data from file
