@@ -158,6 +158,7 @@ output$plt.print <- renderPlot({
           strip.background = element_blank()
           ) +
         geom_line(data = pick(grp == "Waterlevel (masl)"), aes(colour=param)) + 
+        geom_step(data = pick(grp == "Temperature (°C)"), aes(colour=param)) + 
         # geom_col(data = pick(grp == c("Production (m³/d)","Precipitation (mm)")), aes(fill=param), position=position_stack()) +
         geom_col(data = pick(grp == "Precipitation (mm)"), aes(fill=param), position=position_stack()) +
         geom_col(data = pick(grp == "Production (m³/d)"), aes(fill=param), position=position_stack()) +
