@@ -74,6 +74,7 @@ output$distr.gam <- renderPlot({
     p <- v$df$plt %>%
       mutate(doy=as.numeric(strftime(Date, format="%j")), val=!!ensym(xs)) %>%
       select(doy,val) %>%
+      drop_na() %>%
       GAM(k=k) + labs(title=v$title,y=xl)
     
     plts <- list(applyColour(p,xs), gghighlow(xs))
