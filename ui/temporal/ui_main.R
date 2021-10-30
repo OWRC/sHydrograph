@@ -17,9 +17,9 @@ fluidPage(
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  # tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md")),
-                  tabPanel("Viewer", hr(), dygraphOutput("plt.raw")),
-                  tabPanel("Printable", hr(),
+                  tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md")),
+                  tabPanel("Viewer", br(), dygraphOutput("plt.raw")),
+                  tabPanel("Printable", br(),
                            fluidRow(plotOutput("plt.print")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))
                   )
