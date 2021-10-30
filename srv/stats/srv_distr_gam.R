@@ -71,14 +71,19 @@ output$distr.gam <- renderPlot({
     k <- input$distr.gam.k
     # chkP <- input$distr.gam.pnts
     
-    p <- v$df$plt %>%
+    df <- v$df$plt %>%
       mutate(doy=as.numeric(strftime(Date, format="%j")), val=!!ensym(xs)) %>%
       select(doy,val) %>%
-      drop_na() %>%
-      GAM(k=k) + labs(title=v$title,y=xl)
+      drop_na()
     
-    plts <- list(applyColour(p,xs), gghighlow(xs))
-    cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))
+    if ( nrow(df)<=12 ) {
+      ggplot() + 
+        annotate("text", x = as.Date('2016-07-01'), y = 0, size=6, label = 'Not enough data, please select another parameter') + 
+        theme_void() 
+    } else {
+      plts <- list( applyColour(df %>% GAM(k=k) + labs(title=v$title,y=xl), xs), gghighlow(xs) )
+      cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
+    }
   }
 })
 

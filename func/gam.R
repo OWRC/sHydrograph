@@ -2,39 +2,38 @@
 library("mgcv")
 
 GAM <- function(df, k=20) {
-  df.nona <- subset(df, !is.na(val))
-  print(df.nona)
+  # df <- subset(df, !is.na(val))
   # https://www.r-bloggers.com/2016/12/simultaneous-intervals-for-smooths-revisited/
   # see also gam-test.R
   # simultaneous interval for a penalised spline in a fitted GAM
-  m <- gam(val ~ s(doy, k = k), data = df.nona) #, method = "REML")
+  m <- gam(val ~ s(doy, k = k), data = df) #, method = "REML")
   #  k = 20 is the basis dimension of the spline
   #  method = “REML”, the penalised spline model is expressed as a linear mixed model with the wiggly bits of the spline treated as random effects, and is estimated using restricted maximum likelihood; method = “ML” would also work here
   
-  mVar <- gam(residuals(m)^2 ~ s(doy), data = df.nona)
-  df.nona$sd <- sqrt(fitted(mVar))
-  df.nona$fit <- fitted(m)
+  mVar <- gam(residuals(m)^2 ~ s(doy), data = df)
+  df$sd <- sqrt(fitted(mVar))
+  df$fit <- fitted(m)
   
   s <- summary(m)
   txt <- paste0("r² = ",round(s$r.sq,4),"  Deviance explained = ", round(s$dev.expl*100,2), "%")
   
-  df.nona %>% 
+  df %>% 
     mutate(daydate = as.Date(doy, origin = "2016-01-01")) %>%
     ggplot(aes(x=daydate)) +
-      theme_bw() + #theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
-      theme(axis.title.x = element_blank()) +
-      theme(text = element_text(size = 15),
-            axis.ticks.length.x = unit(0.5, "cm"),
-            axis.text.x = element_text(vjust = 5.5, hjust = -0.2)) +
-      
-      geom_ribbon(aes(ymin = fit - qnorm(0.975)*sd, ymax = fit + qnorm(0.975)*sd), alpha = 0.65, fill = "#f1a340") +
-      geom_ribbon(aes(ymin = fit - qnorm(.84)*sd, ymax = fit + qnorm(.84)*sd), alpha = 0.65, fill = "#998ec3") +
-      
-      geom_line(aes(y=fit),size=1, colour='white') +
+    theme_bw() + #theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
+    theme(axis.title.x = element_blank()) +
+    theme(text = element_text(size = 15),
+          axis.ticks.length.x = unit(0.5, "cm"),
+          axis.text.x = element_text(vjust = 5.5, hjust = -0.2)) +
     
-      annotate("text", as.Date("2016-01-01"), -Inf, label = txt, hjust = 0, vjust = -1) +
-      
-      scale_x_date(date_labels = "%b", date_minor_breaks = "1 month")
+    geom_ribbon(aes(ymin = fit - qnorm(0.975)*sd, ymax = fit + qnorm(0.975)*sd), alpha = 0.65, fill = "#f1a340") +
+    geom_ribbon(aes(ymin = fit - qnorm(.84)*sd, ymax = fit + qnorm(.84)*sd), alpha = 0.65, fill = "#998ec3") +
+    
+    geom_line(aes(y=fit),size=1, colour='white') +
+    
+    annotate("text", as.Date("2016-01-01"), -Inf, label = txt, hjust = 0, vjust = -1) +
+    
+    scale_x_date(date_labels = "%b", date_minor_breaks = "1 month")
 }
 
 
