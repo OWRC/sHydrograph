@@ -81,19 +81,19 @@ output$plt.raw <- renderDygraph({
     y2max = 150
     if (pp %in% xl) {
       dg <- dg %>%
-        dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production')
-        # dyBarSeries("Pump", axis = 'y2', color = "#e41a1cBF", label = 'production')
+        # dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production')
+        dyBarSeries("Pump", axis = 'y2', color = "#e41a1cBF", label = 'production')
       y2max = max(v$df$plt[,xr.Nshrt[[pp]]], na.rm=TRUE) * 2
     }
     if (sm %in% xl) {
       dg <- dg %>%
-        dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
-        # dyBarSeries("Sm", axis = 'y2', color = "#4daf4aBF", label = 'snowmelt')
+        # dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
+        dyBarSeries("Sm", axis = 'y2', color = "#4daf4aBF", label = 'snowmelt')
     }
     if (rf %in% xl) {
       dg <- dg %>%
-        dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
-        # dyBarSeries("Rf", axis = 'y2', color = "#377eb8BF", label = 'rainfall')
+        # dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
+        dyBarSeries("Rf", axis = 'y2', color = "#377eb8BF", label = 'rainfall')
     }
     
     dg <- dg %>%
