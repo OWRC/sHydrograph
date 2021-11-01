@@ -2,7 +2,7 @@
 qTemporal_clean <- function(df) {
   df <- df[!(df$RDNC %in% xr.Ignore),]
 
-  if ( as.numeric(difftime(df[2,"Date"], df[1,"Date"], unit="days"))/365.24 > 2.1 ) { df = df[-1,] } # remove first row from database (YCDB fix)
+  if ( as.numeric(difftime(df[2,"Date"], df[1,"Date"], unit="days"))/365.24 > 1.5 ) { df = df[-1,] } # remove first row from database (YCDB fix)
   
   if (!('RDTC' %in% colnames(df))) { df['RDTC'] <- NA }
   

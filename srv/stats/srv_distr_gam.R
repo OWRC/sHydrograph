@@ -78,8 +78,6 @@ output$distr.gam <- renderPlot({
     # chkP <- input$distr.gam.pnts
     chkP <- is.na(as.numeric(xr.Nindx[xs]))
       
-    print(v$df$plt)
-    print(xs)
     df <- v$df$plt %>%
       mutate(doy=as.numeric(strftime(Date, format="%j")), val=!!ensym(xs)) %>%
       dplyr::select(doy,val) %>%
