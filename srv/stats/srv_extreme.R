@@ -106,14 +106,14 @@ extreme_histogram <- function(hds, xs, ismn=FALSE){
   
   if (ismn) {
     df <- hds %>% 
-      select(c(Date,yr,!!ensym(xs))) %>%
+      dplyr::select(c(Date,yr,!!ensym(xs))) %>%
       drop_na() %>%
       group_by(yr) %>% 
       summarise(v = min(!!ensym(xs),na.rm=TRUE), date = Date[which.min(!!ensym(xs))]) %>%
       ungroup()
   } else {
     df <- hds %>% 
-      select(c(Date,yr,!!ensym(xs))) %>%
+      dplyr::select(c(Date,yr,!!ensym(xs))) %>%
       drop_na() %>%
       group_by(yr) %>% 
       summarise(v = max(!!ensym(xs),na.rm=TRUE), date = Date[which.max(!!ensym(xs))]) %>%
@@ -134,17 +134,6 @@ extreme_histogram <- function(hds, xs, ismn=FALSE){
 }
 
 
-ax.screen <- function(df,col) {
-  df1 <- df[which(df$RDNC == col),]
-  # outlier removal
-  med <- median(df1$Val)
-  iqr <- IQR(df1$Val)*100
-  df1$Val[df1$Val<(med-iqr)]=NA
-  df1$Val[df1$Val>(med+iqr)]=NA
-  return(df1[c('Date','Val')])
-}
-
-
 ######################
 ### plots
 ######################
@@ -157,7 +146,11 @@ output$ax.h <- renderPlot({
       xs <- as.character(xr.Nshrt[xl])
       xi <- as.numeric(xr.Nindx[xs])
       xlab <- paste0(xr.NLong[[xs]],'\nfrequency of annual extremes')
-      df1 <- ax.screen(v$df$orig, xi)
+      if ( is.na(xi) ) {
+        df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
+      } else {
+        df1 <- remove.outliers(v$df$orig, xi)
+      }
       
       ismn <- input$ax.mnmx=='min'
       mdl <- input$ax.freq
@@ -169,16 +162,19 @@ output$ax.h <- renderPlot({
 })
 
 output$ax.dist <- renderPlot({
-  req(input$radio.ax)
+  req(xl <- input$radio.ax)
   input$ax.regen
   isolate(
     if (!is.null(v$df$orig)){
-      xl <- input$radio.ax
       xs <- as.character(xr.Nshrt[xl])
       xi <- as.numeric(xr.Nindx[xs])
       xlab <- paste0(xr.NLong[[xs]],'\ndistribution of annual extremes')
-      df1 <- ax.screen(v$df$orig, xi)
-      
+      if ( is.na(xi) ) {
+        df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
+      } else {
+        df1 <- remove.outliers(v$df$orig, xi)
+      }
+
       ismn <- input$ax.mnmx=='min'
       withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(df1, xlab, ismn)})
     }

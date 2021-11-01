@@ -5,31 +5,37 @@ observe({
 })
 
 
-applyColour <- function(p,xs){
+applyColour <- function(chkP,p,xs){
   df <- v$df$plt %>% 
-    select(c(Date,!!ensym(xs))) %>%
+    dplyr::select(c(Date,!!ensym(xs))) %>%
     drop_na() %>%        
     mutate(doy=as.numeric(strftime(Date, format="%j")),
            year=as.factor(strftime(Date, format="%Y")),
            dateday=as.Date(doy, origin = "2016-01-01"))
   
-  p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year)) +
-    coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
+  # p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year)) +
+  #   coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
   
-  # if (chkP) {
-  #   p <- p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year))
-  # } else {
-  #   p <- p + geom_point(data=df,aes(dateday,!!ensym(xs)),size=1, position = "jitter", alpha=0.2) + 
-  #     geom_blank(show.legend = TRUE)
-  # }
-  # p + coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
+  if (chkP) {
+    df[df==0] <- NA
+    p <- p + geom_point(data=df,aes(dateday,!!ensym(xs),group=year,color=year),size=1, position = "jitter")
+  } else {
+    p <- p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year))
+  }
+  p + coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
 }
 
 gghighlow <- function(xs) {
   xi <- as.numeric(xr.Nindx[xs])
   ylab <- paste0(xr.NLong[[xs]],'\npeak density')
   
-  df1 <- hl.screen(v$df$orig, xi)
+  if ( is.na(xi) ) {
+    val <- v$df$plt[[xs]]
+    val[val==0]=NA
+    df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
+  } else {
+    df1 <- remove.outliers(v$df$orig, xi)
+  }
   # df1 <- df1[df1$Date >= input$hl.rng[1] & df1$Date <= input$hl.rng[2],]
   
   dfhl <- df1 %>%
@@ -70,10 +76,13 @@ output$distr.gam <- renderPlot({
     xs <- as.character(xr.Nshrt[xl])
     k <- input$distr.gam.k
     # chkP <- input$distr.gam.pnts
-    
+    chkP <- is.na(as.numeric(xr.Nindx[xs]))
+      
+    print(v$df$plt)
+    print(xs)
     df <- v$df$plt %>%
       mutate(doy=as.numeric(strftime(Date, format="%j")), val=!!ensym(xs)) %>%
-      select(doy,val) %>%
+      dplyr::select(doy,val) %>%
       drop_na()
     
     if ( nrow(df)<=12 ) {
@@ -81,7 +90,7 @@ output$distr.gam <- renderPlot({
         annotate("text", x = as.Date('2016-07-01'), y = 0, size=6, label = 'Not enough data, please select another parameter') + 
         theme_void() 
     } else {
-      plts <- list( applyColour(df %>% GAM(k=k) + labs(title=v$title,y=xl), xs), gghighlow(xs) )
+      plts <- list( applyColour(chkP, df %>% GAM(k=k) + labs(title=v$title,y=xl), xs), gghighlow(xs) )
       cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
     }
   }
@@ -98,7 +107,7 @@ output$distr.gam <- renderPlot({
 #     
 #     # (naive) point wise distribution
 #     p <- v$df$plt %>%
-#       select(c(Date,!!ensym(xs))) %>%
+#       dplyr::select(c(Date,!!ensym(xs))) %>%
 #       drop_na() %>%
 #       mutate(meanVal = rollmean(x=!!ensym(xs), k, fill = NA),
 #              doy=as.numeric(strftime(Date, format="%j")),

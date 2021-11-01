@@ -8,16 +8,6 @@ observe({
 
 observe(updateDateRangeInput(session, "hl.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
-hl.screen <- function(df,col) {
-  df1 <- df[which(df$RDNC == col),]
-  # outlier removal
-  med <- median(df1$Val)
-  iqr <- IQR(df1$Val)*100
-  df1$Val[df1$Val<(med-iqr)]=NA
-  df1$Val[df1$Val>(med+iqr)]=NA
-  return(df1[c('Date','Val')])
-}
-
 ######################
 ### plots
 ######################
@@ -29,7 +19,7 @@ output$plt.hl.all <- renderPlot({
     xi <- as.numeric(xr.Nindx[xs])
     ylab <- xr.NLong[[xs]]
     
-    df1 <- hl.screen(v$df$orig, xi)
+    df1 <- remove.outliers(v$df$orig, xi)
     df1 <- df1[df1$Date >= input$hl.rng[1] & df1$Date <= input$hl.rng[2],]
     
     # ggplot(df1, aes(Date,Val)) +
@@ -65,7 +55,7 @@ output$plt.hl.dens <- renderPlot({
     xi <- as.numeric(xr.Nindx[xs])
     ylab <- paste0(xr.NLong[[xs]],'\npeak density')
     
-    df1 <- hl.screen(v$df$orig, xi)
+    df1 <- remove.outliers(v$df$orig, xi)
     df1 <- df1[df1$Date >= input$hl.rng[1] & df1$Date <= input$hl.rng[2],]
     
     dfhl <- df1 %>%

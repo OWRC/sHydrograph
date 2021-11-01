@@ -13,7 +13,7 @@ output$distr.m.h <- renderPlot({
     
     # https://www.datanovia.com/en/blog/elegant-visualization-of-density-distribution-in-r-using-ridgeline/
     v$df$plt %>%
-      select(c(Date,!!ensym(xs))) %>%
+      dplyr::select(c(Date,!!ensym(xs))) %>%
       drop_na() %>%
       mutate(smonth=factor(strftime(Date, format="%b"),levels=rev(c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')))) %>%
       

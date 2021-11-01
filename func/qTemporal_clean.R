@@ -1,6 +1,8 @@
 
 qTemporal_clean <- function(df) {
   df <- df[!(df$RDNC %in% xr.Ignore),]
+
+  if ( as.numeric(difftime(df[2,"Date"], df[1,"Date"], unit="days"))/365.24 > 2.1 ) { df = df[-1,] } # remove first row from database (YCDB fix)
   
   if (!('RDTC' %in% colnames(df))) { df['RDTC'] <- NA }
   
@@ -13,21 +15,21 @@ qTemporal_clean <- function(df) {
   # View(df)
   
   df.plt <- df %>%
-    select(-one_of(c('RDTC','unit'))) %>% # drop columns
+    dplyr::select(-one_of(c('RDTC','unit'))) %>% # drop columns
     group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426) 
     mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
     spread(key=RDNC, value=Val) %>%
-    select(-one_of(c('row_id'))) %>% # drop col 
+    dplyr::select(-one_of(c('row_id'))) %>% # drop col 
     # mutate(Date = zoo::as.Date(Date)) %>%
     plyr::rename(xr.RNDC) #%>%
   # complete(Date = seq.Date(min(Date),max(Date),by='day'))
   # View(df.plt)
   
-  if ("AtmosYld" %in% names(df.plt)) {
-    s <- min(which(!is.na(df.plt$AtmosYld))) # index of first non-missing value
-    f <- max(which(!is.na(df.plt$AtmosYld))) # index of last non-missing value
-    df.plt$AtmosYld[s:f][is.na(df.plt$AtmosYld[s:f])] <- 0
-  }
+  # if ("AtmosYld" %in% names(df.plt)) {
+  #   s <- min(which(!is.na(df.plt$AtmosYld))) # index of first non-missing value
+  #   f <- max(which(!is.na(df.plt$AtmosYld))) # index of last non-missing value
+  #   df.plt$AtmosYld[s:f][is.na(df.plt$AtmosYld[s:f])] <- 0
+  # }
   
   return(list("orig" = df, "plt" = df.plt))
 }

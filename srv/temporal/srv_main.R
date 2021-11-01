@@ -68,7 +68,6 @@ output$plt.raw <- renderDygraph({
   req(input$chkData)
   if (!is.null(v$df$plt)){
     rng <- r$rngselect+1
-    print(rng)
     rf <- xr.NLong[["Rf"]]
     sm <- xr.NLong[["Sm"]]
     pp <- xr.NLong[["Pump"]]
@@ -80,22 +79,21 @@ output$plt.raw <- renderDygraph({
 
     
     y2max = 150
-    # dyMultiColumnGroup(c("Rf","Sm","Pump"), axis = 'y2')
     if (pp %in% xl) {
       dg <- dg %>%
-        # dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production')
-        dyBarSeries("Pump", axis = 'y2', color = "#e41a1cBF", label = 'production')
+        dySeries("Pump", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#e41a1c", label = 'production')
+        # dyBarSeries("Pump", axis = 'y2', color = "#e41a1cBF", label = 'production')
       y2max = max(v$df$plt[,xr.Nshrt[[pp]]], na.rm=TRUE) * 2
     }
     if (sm %in% xl) {
       dg <- dg %>%
-        # dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
-        dyBarSeries("Sm", axis = 'y2', color = "#4daf4aBF", label = 'snowmelt')
+        dySeries("Sm", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = 'snowmelt')
+        # dyBarSeries("Sm", axis = 'y2', color = "#4daf4aBF", label = 'snowmelt')
     }
     if (rf %in% xl) {
       dg <- dg %>%
-        # dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
-        dyBarSeries("Rf", axis = 'y2', color = "#377eb8BF", label = 'rainfall')
+        dySeries("Rf", axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#377eb8", label = 'rainfall')
+        # dyBarSeries("Rf", axis = 'y2', color = "#377eb8BF", label = 'rainfall')
     }
     
     dg <- dg %>%
@@ -107,7 +105,7 @@ output$plt.raw <- renderDygraph({
 
     
     if ( !is.null(v$scrn) && input$chkScrn ) {
-      dd <- v$df$plt[,xs[xs!='AtmosYld']]
+      dd <- v$df$plt[,xs[xs!='Rf' & xs!='Sm']]
       nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
       xscr <- max(c(max(dd[dd>0],na.rm=TRUE),max(v$scrn)))
       buf <- .05*(xscr-nscr)
@@ -132,9 +130,9 @@ norm_series <- reactive({
   xs <- as.character(xr.Nshrt[xl])
 
   df <- v$df$plt %>% 
-           subset( Date >= rng[[1]]  &  Date <= rng[[2]] ) %>%
-           select("Date", xs) %>% 
-           gather("param", "val", -Date, na.rm=TRUE)
+         subset( Date >= rng[[1]]  &  Date <= rng[[2]] ) %>%
+         dplyr::select("Date", xs) %>% 
+         gather("param", "val", -Date, na.rm=TRUE)
   
   df$grp <- mapvalues(df$param,xs,xr.group[xs])
   df$param <- mapvalues(df$param,xs,xr.NLong[xs])

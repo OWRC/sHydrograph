@@ -12,13 +12,14 @@ fluidPage(
       hr(),
       h4("Selected data range:"),
       dateRangeInput("dt.rng",label=NULL), #,label='selected data range:'),
-      htmlOutput('info.main'),
+      htmlOutput('info.main'), br(),
+      shiny::includeMarkdown("md/notes.md"),
       width = 2
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md")),
                   tabPanel("Viewer", br(), dygraphOutput("plt.raw")),
+                  tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md")),
                   tabPanel("Printable", br(),
                            fluidRow(plotOutput("plt.print")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))

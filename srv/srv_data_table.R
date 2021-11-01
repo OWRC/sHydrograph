@@ -31,9 +31,9 @@ output$tabts <- renderDataTable({
     if (!is.null(v$df$orig)) df.filtered()
   }, 
   options = list(scrollY='100%', scrollX=TRUE,
-            lengthMenu = c(30, 100, 365, 3652),
-            pageLength = 100,
-            searching=FALSE)
+                 lengthMenu = c(30, 100, 365, 3652),
+                 pageLength = 100,
+                 searching=FALSE)
 )
 
 output$tabCsv <- downloadHandler(

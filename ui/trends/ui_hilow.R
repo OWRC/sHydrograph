@@ -7,7 +7,8 @@ fluidPage(
   fluidRow(
     sidebarPanel(
       dateRangeInput("hl.rng", label = "Choose date range"),
-      radioButtons("radio.hl", "Choose data type:",choices=c("dummy")),
+      radioButtons("radio.hl", "Choose data type:",choices=c("dummy")), br(),
+      shiny::includeMarkdown("md/notes.md"),
       width=3
     ),
     mainPanel(

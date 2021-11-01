@@ -5,10 +5,12 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
-      radioButtons("radio.distr.gam", "Choose data type:",choices=c("dummy")),
+      radioButtons("radio.distr.gam", "Choose data type:",choices=c("dummy")), br(),
+      shiny::includeMarkdown("md/notes.md"),
       numericInput('distr.gam.k','smoothing (basis dimension of the spline-k)',12,min=0,max=3000),
       # checkboxInput('distr.gam.pnts', 'categorize by year', value=TRUE),
-      checkboxInput('distr.gam.norm', 'normalize/de-trend'),
+      # checkboxInput('distr.gam.nonzero', 'non-zero values only', value=FALSE),
+      # checkboxInput('distr.gam.norm', 'normalize/de-trend'),
       width=3
     ),
     mainPanel(

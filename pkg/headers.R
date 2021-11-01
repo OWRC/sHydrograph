@@ -5,13 +5,17 @@ output$hdr.raw <- renderUI({shiny::HTML(paste0("<h1>",v$title,"</h1>"))})
 
 output$hdr.an <- renderUI({shiny::HTML("<h1>Annual summary</h1>")})
 
+output$hdr.se <- renderUI({shiny::HTML("<h1>Seasonal summary</h1>")})
+
+output$hdr.sc <- renderUI({shiny::HTML("<h1>Scatter plot</h1>")})
+
 # output$hdr.hl <- renderUI({shiny::HTML("<h1>High-Low recurrence</h1>")})
 
 output$hdr.ax <- renderUI({shiny::HTML("<h1>Annual extreme</h1>")})
 
 output$hdr.distr.m <- renderUI({shiny::HTML("<h1>Monthly Densities</h1>")})
 
-output$hdr.distr.gam <- renderUI({shiny::HTML("<h1>Generalized Additive Model/High-Low Occurence</h1>")})
+output$hdr.distr.gam <- renderUI({shiny::HTML("<h1>Annual variability/High-Low Occurence</h1>")})
 
-output$hdr.qq <- renderUI({shiny::HTML("<h1>Quantile-Quantile plot plot</h1>")})
+output$hdr.qq <- renderUI({shiny::HTML("<h1>Quantile-Quantile plot</h1>")})
 

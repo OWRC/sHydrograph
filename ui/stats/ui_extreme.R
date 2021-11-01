@@ -5,7 +5,8 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
-      radioButtons("radio.ax", "Choose data type:",choices=c("dummy")), hr(),
+      radioButtons("radio.ax", "Choose data type:",choices=c("dummy")),  br(),
+      shiny::includeMarkdown("md/notes.md"), hr(),
       h5('Click "Regenerate" after making changes below'),
       selectInput('ax.mnmx', 'extreme', c('Annual maximum'='max','Annual minimum'='min')),
       selectInput('ax.freq', 'flow frequency model', c('Log Pearson III'='lp3',

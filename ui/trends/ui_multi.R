@@ -1,13 +1,14 @@
 
 fluidPage(
-  title = 'sHydrograph multivariate summary',
+  title = 'Multivariate summary',
   fluidRow(
     htmlOutput("hdr.mv")
   ), hr(),
   fluidRow(
     sidebarPanel(
       dateRangeInput("mv.rng", label = "Choose date range"),
-      radioButtons("radio.mv", "Choose data type:",choices=c("under construction")),
+      radioButtons("radio.mv", "Choose data type:",choices=c("under construction")), br(),
+      shiny::includeMarkdown("md/notes.md"),
       width=3
     ),
     mainPanel(

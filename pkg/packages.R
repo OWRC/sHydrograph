@@ -18,6 +18,7 @@ library(zoo)
 library(dygraphs)
 library(xts)
 library(fs)
+library(MASS)
 require(curl)
 
 
@@ -26,9 +27,12 @@ source("pkg/loc_info.R", local = TRUE)
 source("pkg/xref.R", local = TRUE)
 source("func/collect_interval.R", local = TRUE)
 source("func/frequency_analysis.R", local = TRUE)
+source("func/remove_outliers.R", local = TRUE)
+source("func/wtr_yr.R", local = TRUE)
 source("func/gam.R", local = TRUE)
-source("func/YCDB_interval_clean.R", local = TRUE)
-source("func/YCDB_API_query.R", local = TRUE)
+source("func/ORMGP_API.R", local = TRUE)
+source("func/qTemporal_clean.R", local = TRUE)
+source("func/YCDB_query.R", local = TRUE)
 
 
 

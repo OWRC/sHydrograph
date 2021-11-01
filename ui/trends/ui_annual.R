@@ -1,13 +1,14 @@
 
 fluidPage(
-  title = 'sHydrograph annual summary',
+  title = 'Annual summary',
   fluidRow(
     htmlOutput("hdr.an")
   ), hr(),
   fluidRow(
     sidebarPanel(
       dateRangeInput("an.rng", label = "Choose date range"),
-      radioButtons("radio.an", "Choose data type:",choices=c("dummy")),
+      radioButtons("radio.an", "Choose data type:",choices=c("dummy")), br(),
+      shiny::includeMarkdown("md/notes.md"),
       width=3
     ),
     mainPanel(

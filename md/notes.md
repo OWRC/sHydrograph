@@ -1,0 +1,1 @@
+¹ values are interpolations from nearby meteorological stations

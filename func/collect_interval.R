@@ -25,7 +25,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     # v$lng <- icrd$LONG
     setProgress(0.6,"interpolating to location..")
     dfinterp <- qInterp(icrd$LONG,icrd$LAT)
-    v$df$plt <- v$df$plt %>% inner_join(dfinterp %>% select(-c("Tx","Tn","Sf","Pa")), by="Date")
+    v$df$plt <- v$df$plt %>% inner_join(dfinterp %>% dplyr::select(-c("Tx","Tn","Sf","Pa")), by="Date")
   }))
   shinyjs::hide(id = "loading-content", anim = TRUE, animType = "fade")
   shinyjs::show("app-content")

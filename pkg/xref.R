@@ -37,7 +37,7 @@ xr.NLong <- c(
     "Pump"="Production (m3/d)",
     "Precip"="Precipitation (mm)",
     "Rf"="Rainfall¹ (mm)",
-    "Sm"="Snowmelt (mm)",
+    "Sm"="Snowmelt¹ (mm)",
     "AtmosYld"="Atmospheric Yield (mm)",
     "StrmFlw"="Stream flow (cms)"
     )
