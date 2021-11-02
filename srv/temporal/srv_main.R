@@ -21,7 +21,7 @@ observe({
 observe({
   y <- colnames(v$df$plt)[2:ncol(v$df$plt)]
   x <- unname(xr.NLong[y])
-  s <- x[x != "Temperature (Water) - Logger (degC)"]
+  s <- x[x != "Temperature (Water) - Logger (°C)"]
   if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
   if (is.null(v$scrn)) hide("chkScrn")
@@ -100,12 +100,12 @@ output$plt.raw <- renderDygraph({
       dyAxis('y', label=as.character(xl[xl != rf & xl != sm & xl != pp]), axisLabelWidth=100) %>%
       dyAxis('y2', label=as.character(xl[xl == rf | xl == sm | xl == pp]), valueRange = c(y2max, 0)) %>%
       dyRangeSelector(fillColor = '', height=40, dateWindow = rng, retainDateWindow = TRUE) %>%
-      dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE) # %>%
+      dyOptions(axisLineWidth = 1.5) # %>%  # , connectSeparatedPoints = TRUE
       # dyLegend(show = "follow")
 
     
     if ( !is.null(v$scrn) && input$chkScrn ) {
-      dd <- v$df$plt[,xs[xs!='Rf' & xs!='Sm']]
+      dd <- v$df$plt[,xs[xs!='Rf' & xs!='Sm' & xs!='Pump']]
       nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
       xscr <- max(c(max(dd[dd>0],na.rm=TRUE),max(v$scrn)))
       buf <- .05*(xscr-nscr)
@@ -147,7 +147,8 @@ output$plt.print <- renderPlot({
   req(input$chkData)
   req(rng <- input$dt.rng)
   if (!is.null(v$df$orig)){
-    norm_series() %>%
+    withProgress(message = 'building plot..', value = 0.1, {
+          norm_series() %>%
       ggplot(aes(Date,val)) + 
         theme_bw() + theme(
           axis.title=element_blank(), 
@@ -163,5 +164,6 @@ output$plt.print <- renderPlot({
         # facet_grid(rows = vars(grp), scales = "free") +
         facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left") +
         ggtitle(paste0(v$title,"\n",rng[[1]]," to ",rng[[2]]))
+    })
   }
 })

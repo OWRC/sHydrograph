@@ -33,7 +33,7 @@ xr.NLong <- c(
     # "Wlvln"="Water Level - Logger - Min (Compensated & Corrected)",
     "WtrLvl"="Water Level - Logger (Compensated & Corrected-masl)",
     "WtrLvl.s"="Water Level - Manual - Static (masl)",
-    "Temp"="Temperature (Water) - Logger (degC)",
+    "Temp"="Temperature (Water) - Logger (°C)",
     "Pump"="Production (m3/d)",
     "Precip"="Precipitation (mm)",
     "Rf"="Rainfall¹ (mm)",

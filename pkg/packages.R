@@ -10,6 +10,7 @@ library(dplyr)
 library(lmomco)
 library(ggplot2)
 library(ggridges)
+library(cowplot)
 library(scales)
 library(date)
 library(lubridate)
@@ -32,7 +33,7 @@ source("func/wtr_yr.R", local = TRUE)
 source("func/gam.R", local = TRUE)
 source("func/ORMGP_API.R", local = TRUE)
 source("func/qTemporal_clean.R", local = TRUE)
-source("func/YCDB_query.R", local = TRUE)
+source("func/YCDB_API_query.R", local = TRUE)
 
 
 
