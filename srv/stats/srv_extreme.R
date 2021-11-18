@@ -1,22 +1,27 @@
 
 observe({
-  x <- unname(xr.NLong[colnames(v$df$plt[-c(1)])])
+  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df[-c(1)])])
   # ss <- substring(x,1,regexpr("\\([^\\(]*$", x)-1)
   updateRadioButtons(session, "radio.ax", choiceNames=x, choiceValues=x)
 })
 
 #########################################################################
 
-frequencyPlot <- function(series, ci, ylab=NULL, inverted=FALSE) {
+frequencyPlot <- function(series, years, ci, ylab=NULL, inverted=FALSE) {
   
   # determine plotting positions
   if(inverted) {
     bwpeaks <- data.frame(PROB = 1-pp(series, sort = FALSE), Val = series)
     nep <- 1-ci$nonexceed_prob
+    lorg <- c(0, 0)
+    lpos <- c(.01, .01)    
   } else {
     bwpeaks <- data.frame(PROB = pp(series, sort = FALSE), Val = series)
     nep <- ci$nonexceed_prob
+    lorg <- c(1, 0)
+    lpos <- c(.99, .01)    
   }
+  bwpeaks$year = years
   
   xbreaks <- c(0.002,0.01,0.1,0.25,0.5,0.8,0.9,0.95,0.975,0.99,0.995,0.998)
   rnge <- range(series, ci[,ncol(ci)], na.rm=TRUE)
@@ -36,8 +41,11 @@ frequencyPlot <- function(series, ci, ylab=NULL, inverted=FALSE) {
   
   # now plot
   p <- ggplot(bwpeaks) + 
-    geom_point(aes(x=PROB, y=Val)) + 
-    theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
+    geom_point(aes(x=PROB, y=Val, colour=year)) + 
+    scale_colour_binned(type = "viridis") +
+    theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), 
+                       panel.grid.minor = element_line(colour = "#808080"),
+                       legend.justification = lorg, legend.position = lpos) +
     scale_y_continuous(trans="log10", name=ylab) +
     scale_x_continuous(trans=probability_trans(distribution="norm"),
                        breaks=xbreaks, labels=signif(prob2T(xbreaks), digits=3),
@@ -64,10 +72,11 @@ frequencyPlot <- function(series, ci, ylab=NULL, inverted=FALSE) {
 extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=FALSE) {
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
   if (ismn) {
-    input_data <- aggregate(Val ~ yr, hds, min)[,2]
+    agg <- aggregate(Val ~ yr, hds, min)
   } else {
-    input_data <- aggregate(Val ~ yr, hds, max)[,2]  
+    agg <- aggregate(Val ~ yr, hds, max) 
   }
+  input_data <- agg[,2]
   
   if (length(input_data)<5) {
     p <- ggplot() + theme_void() + xlim(0, 10) + ylim(0, 100) + annotate("text", x=1, y=85, hjust=0, size=6,
@@ -80,7 +89,7 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=
                       ci = ci)           # confidence interval level
     
     # generate frequency plot
-    return(frequencyPlot(input_data, ci$ci, xlab, inverted=ismn))    
+    return(frequencyPlot(input_data, agg[,1], ci$ci, xlab, inverted=ismn))    
   }
 }
 

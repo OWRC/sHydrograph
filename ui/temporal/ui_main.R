@@ -5,6 +5,17 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      pickerInput(
+        inputId = "pck.raw",
+        label = "Choose interval:",
+        choices = NULL,
+        options = list(
+          `actions-box` = TRUE,
+          size = 10,
+          `selected-text-format` = "count > 3"
+        ),
+        multiple = TRUE
+      ),
       # selectInput("cmbData", "Choose data type:", choices=NULL),
       checkboxGroupInput("chkData", "Choose data type:", choices=NULL),
       hr(),

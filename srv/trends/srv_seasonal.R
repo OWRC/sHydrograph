@@ -1,6 +1,6 @@
 
 observe({
-  x <- unname(xr.NLong[colnames(v$df$plt[-c(1)])])
+  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df$plt[-c(1)])])
   # ss <- substring(x,1,regexpr("\\([^\\(]*$", x)-1)
   updateRadioButtons(session, "radio.se", choiceNames=x, choiceValues=x)
 })

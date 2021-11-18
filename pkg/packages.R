@@ -2,6 +2,7 @@
 
 library(shiny)
 library(shinyjs)
+library(shinyWidgets)
 library(markdown)
 library(jsonlite)
 library(tidyr)
@@ -24,35 +25,5 @@ require(curl)
 
 
 source("pkg/js.R", local = TRUE)
-source("pkg/loc_info.R", local = TRUE)
 source("pkg/xref.R", local = TRUE)
-source("func/collect_interval.R", local = TRUE)
-source("func/frequency_analysis.R", local = TRUE)
-source("func/remove_outliers.R", local = TRUE)
-source("func/wtr_yr.R", local = TRUE)
-source("func/gam.R", local = TRUE)
-source("func/ORMGP_API.R", local = TRUE)
-source("func/qTemporal_clean.R", local = TRUE)
-source("func/YCDB_API_query.R", local = TRUE)
 
-
-
-# install.packages('shiny')
-# install.packages('shinyjs')
-# install.packages('markdown')
-# install.packages('jsonlite')
-# install.packages('tidyr')
-# install.packages('plyr')
-# install.packages('dplyr')
-# install.packages('lmomco')
-# install.packages('ggplot2')
-# install.packages('scales')
-# install.packages('date')
-# install.packages('lubridate')
-# install.packages('reshape2')
-# install.packages('zoo')
-# install.packages('dygraphs')
-# install.packages('xts')
-# install.packages('fs')
-
-# install.packages('rlang')

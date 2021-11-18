@@ -1,6 +1,6 @@
 
 observe({
-  x <- unname(xr.NLong[colnames(v$df$plt[-c(1)])])
+  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df[-c(1)])])
   updateRadioButtons(session, "radio.distr.gam", choiceNames=x, choiceValues=x)
 })
 
