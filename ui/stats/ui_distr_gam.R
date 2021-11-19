@@ -5,6 +5,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      selectInput("int.distr.gam", "Choose interval:", choices=NULL),
       radioButtons("radio.distr.gam", "Choose data type:",choices=c("dummy")), br(),
       shiny::includeMarkdown("md/notes.md"),
       numericInput('distr.gam.k','smoothing (basis dimension of the spline-k)',12,min=0,max=3000),

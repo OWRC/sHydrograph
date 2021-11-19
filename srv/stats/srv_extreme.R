@@ -1,8 +1,13 @@
 
 observe({
-  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df[-c(1)])])
-  # ss <- substring(x,1,regexpr("\\([^\\(]*$", x)-1)
+  req(i <- input$int.ax)
+  x <- unname(xr.NLong[unique(v$df[v$df$IID==i,]$RDNC)])
   updateRadioButtons(session, "radio.ax", choiceNames=x, choiceValues=x)
+})
+
+observe({
+  typs <- unique(v$df$IID)
+  updateSelectInput(session,"int.ax", choices = typs, selected = typs)
 })
 
 #########################################################################
@@ -110,22 +115,22 @@ extreme_density <- function(hds, xlab, ismn=FALSE){
   return(p)
 }
 
-extreme_histogram <- function(hds, xs, ismn=FALSE){
+extreme_histogram <- function(hds, ismn=FALSE){
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
   
   if (ismn) {
     df <- hds %>% 
-      dplyr::select(c(Date,yr,!!ensym(xs))) %>%
+      dplyr::select(c(Date,yr,Val)) %>%
       drop_na() %>%
       group_by(yr) %>% 
-      summarise(v = min(!!ensym(xs),na.rm=TRUE), date = Date[which.min(!!ensym(xs))]) %>%
+      summarise(v = min(Val,na.rm=TRUE), date = Date[which.min(Val)]) %>%
       ungroup()
   } else {
     df <- hds %>% 
-      dplyr::select(c(Date,yr,!!ensym(xs))) %>%
+      dplyr::select(c(Date,yr,Val)) %>%
       drop_na() %>%
       group_by(yr) %>% 
-      summarise(v = max(!!ensym(xs),na.rm=TRUE), date = Date[which.max(!!ensym(xs))]) %>%
+      summarise(v = max(Val,na.rm=TRUE), date = Date[which.max(Val)]) %>%
       ungroup() 
   }
   
@@ -147,19 +152,15 @@ extreme_histogram <- function(hds, xs, ismn=FALSE){
 ### plots
 ######################
 output$ax.h <- renderPlot({
-  req(input$radio.ax)
+  req(xl <- input$radio.ax)
+  req(iid <- input$int.ax)
   input$ax.regen
   isolate({
-    if (!is.null(v$df$orig)){
-      xl <- input$radio.ax
+    if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
-      xi <- as.numeric(xr.Nindx[xs])
       xlab <- paste0(xr.NLong[[xs]],'\nfrequency of annual extremes')
-      if ( is.na(xi) ) {
-        df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
-      } else {
-        df1 <- remove.outliers(v$df$orig, xi)
-      }
+      
+      df1 <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
       
       ismn <- input$ax.mnmx=='min'
       mdl <- input$ax.freq
@@ -172,18 +173,15 @@ output$ax.h <- renderPlot({
 
 output$ax.dist <- renderPlot({
   req(xl <- input$radio.ax)
+  req(iid <- input$int.ax)
   input$ax.regen
   isolate(
     if (!is.null(v$df$orig)){
       xs <- as.character(xr.Nshrt[xl])
-      xi <- as.numeric(xr.Nindx[xs])
       xlab <- paste0(xr.NLong[[xs]],'\ndistribution of annual extremes')
-      if ( is.na(xi) ) {
-        df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
-      } else {
-        df1 <- remove.outliers(v$df$orig, xi)
-      }
-
+      
+      df1 <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
+      
       ismn <- input$ax.mnmx=='min'
       withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(df1, xlab, ismn)})
     }
@@ -197,10 +195,8 @@ output$ax.hist <- renderPlot({
     if (!is.null(v$df$orig)){
       xl <- input$radio.ax
       xs <- as.character(xr.Nshrt[xl])
-      xi <- as.numeric(xr.Nindx[xs])
-      
       ismn <- input$ax.mnmx=='min'
-      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(v$df$plt, xs, ismn)})
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), ismn)})
     }
   )
 })

@@ -1,42 +1,40 @@
 
 observe({
-  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df[-c(1)])])
+  req(i <- input$int.distr.gam)
+  x <- unname(xr.NLong[unique(v$df[v$df$IID==i,]$RDNC)])
   updateRadioButtons(session, "radio.distr.gam", choiceNames=x, choiceValues=x)
 })
 
+observe({
+  typs <- unique(v$df$IID)
+  updateSelectInput(session,"int.distr.gam", choices = typs, selected = typs)
+})
 
-applyColour <- function(chkP,p,xs){
-  df <- v$df$plt %>% 
-    dplyr::select(c(Date,!!ensym(xs))) %>%
+
+applyColour <- function(df1,p,asPoints=FALSE){
+  df <- df1 %>% 
+    dplyr::select(c(Date,Val)) %>%
     drop_na() %>%        
     mutate(doy=as.numeric(strftime(Date, format="%j")),
            year=as.factor(strftime(Date, format="%Y")),
            dateday=as.Date(doy, origin = "2016-01-01"))
   
-  # p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year)) +
+  # p + geom_line(data=df, aes(dateday,Val,group=year,color=year)) +
   #   coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
   
-  if (chkP) {
+  if (asPoints) {
     df[df==0] <- NA
-    p <- p + geom_point(data=df,aes(dateday,!!ensym(xs),group=year,color=year),size=1, position = "jitter")
+    p <- p + geom_point(data=df,aes(dateday,Val,group=year,color=year),size=1, position = "jitter")
   } else {
-    p <- p + geom_line(data=df, aes(dateday,!!ensym(xs),group=year,color=year))
+    p <- p + geom_line(data=df, aes(dateday,Val,group=year,color=year))
   }
   p + coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
 }
 
-gghighlow <- function(xs) {
-  xi <- as.numeric(xr.Nindx[xs])
+gghighlow <- function(df1) {
+  xl <- input$radio.distr.gam
+  xs <- as.character(xr.Nshrt[xl])
   ylab <- paste0(xr.NLong[[xs]],'\npeak density')
-  
-  if ( is.na(xi) ) {
-    val <- v$df$plt[[xs]]
-    val[val==0]=NA
-    df1 <- tibble(Date=v$df$plt$Date,Val=v$df$plt[[xs]]) 
-  } else {
-    df1 <- remove.outliers(v$df$orig, xi)
-  }
-  # df1 <- df1[df1$Date >= input$hl.rng[1] & df1$Date <= input$hl.rng[2],]
   
   dfhl <- df1 %>%
     drop_na() %>%
@@ -72,23 +70,22 @@ gghighlow <- function(xs) {
 
 output$distr.gam <- renderPlot({
   req(xl <- input$radio.distr.gam)
-  if (!is.null(v$df$orig)) {
+  req(iid <- input$int.distr.gam)
+  req(k <- input$distr.gam.k)
+  if (!is.null(v$df)) {
     xs <- as.character(xr.Nshrt[xl])
-    k <- input$distr.gam.k
-    # chkP <- input$distr.gam.pnts
-    chkP <- is.na(as.numeric(xr.Nindx[xs]))
-      
-    df <- v$df$plt %>%
-      mutate(doy=as.numeric(strftime(Date, format="%j")), val=!!ensym(xs)) %>%
-      dplyr::select(doy,val) %>%
+    df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
+    df1 <- df %>%
+      mutate(doy=as.numeric(strftime(Date, format="%j"))) %>%
+      dplyr::select(doy,Val) %>%
       drop_na()
     
-    if ( nrow(df)<=12 ) {
+    if ( nrow(df1)<=12 ) {
       ggplot() + 
         annotate("text", x = as.Date('2016-07-01'), y = 0, size=6, label = 'Not enough data, please select another parameter') + 
         theme_void() 
     } else {
-      plts <- list( applyColour(chkP, df %>% GAM(k=k) + labs(title=v$title,y=xl), xs), gghighlow(xs) )
+      plts <- list( applyColour(df1, df1 %>% GAM(k=k) + labs(title=iid,y=xl), xs), gghighlow(df) )
       cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
     }
   }

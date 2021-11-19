@@ -82,8 +82,8 @@ xr.step <- c(
   "Temp"=FALSE,
   "Pump"=TRUE,
   "Precip"=TRUE,
-  "Rf"=TRUE,
-  "Sm"=TRUE,
+  "Rainfall"=TRUE,
+  "Snowmelt"=TRUE,
   "AtmosYld"=TRUE,
   "StrmFlw"=TRUE
 )

@@ -5,6 +5,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      selectInput("int.distr.m", "Choose interval:", choices=NULL),
       radioButtons("radio.distr.m", "Choose data type:",choices=c("dummy")), br(),
       shiny::includeMarkdown("md/notes.md"),
       width=3

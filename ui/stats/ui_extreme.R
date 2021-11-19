@@ -5,6 +5,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      selectInput("int.ax", "Choose interval:", choices=NULL),
       radioButtons("radio.ax", "Choose data type:",choices=c("dummy")),  br(),
       shiny::includeMarkdown("md/notes.md"), hr(),
       h5('Click "Regenerate" after making changes below'),

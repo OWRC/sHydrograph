@@ -5,8 +5,9 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
-      selectInput('freq.qq', 'Choose distribution model', c('Uniform','Normal','Exponential'), selected='Normal'),
+      selectInput("int.qq", "Choose interval:", choices=NULL),
       radioButtons("radio.qq", "Choose data type:",choices=c("dummy")),
+      selectInput('freq.qq', 'Choose distribution model', c('Uniform','Normal','Exponential'), selected='Normal'),
       shiny::includeMarkdown("md/notes.md"),
       htmlOutput('info.qq')
     ),

@@ -2,6 +2,11 @@
 
 observe(updateDateRangeInput(session, "tab.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
+observe({
+  x <- unname(unlist(v$inam))
+  updatePickerInput(session,"pck.tab", choices = x, selected = x)
+})
+
 
 ########################################################
 #### data table
@@ -9,8 +14,9 @@ observe(updateDateRangeInput(session, "tab.rng", start = v$DTb, end = v$DTe, min
 df.filtered <- reactive({
   req(s <- input$tabRad)
   rep(rng <- input$tab.rng)
+  req(iids <- input$pck.tab)
   if (s == 1) {
-    v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],] %>%
+    v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]] & v$df$IID %in% iids,] %>%
       dplyr::select(-one_of(c('RDTC','grp')))
   } else if (s == 2) {
     # grab climate data

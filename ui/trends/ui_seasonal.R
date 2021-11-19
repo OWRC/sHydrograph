@@ -7,6 +7,7 @@ fluidPage(
   fluidRow(
     sidebarPanel(
       dateRangeInput("se.rng", label = "Choose date range"),
+      selectInput("int.se", "Choose interval:", choices=NULL),
       radioButtons("radio.se", "Choose data type:",choices=c("dummy")),
       width=3
     ),

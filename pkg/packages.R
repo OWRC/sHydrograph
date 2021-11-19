@@ -25,5 +25,5 @@ require(curl)
 
 
 source("pkg/js.R", local = TRUE)
-source("pkg/xref.R", local = TRUE)
+source("pkg/owrc-xref.R", local = TRUE)
 

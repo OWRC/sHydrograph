@@ -1,8 +1,15 @@
 
 observe({
-  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df[-c(1)])])
+  req(i <- input$int.qq)
+  x <- unname(xr.NLong[unique(v$df[v$df$IID==i,]$RDNC)])
   updateRadioButtons(session, "radio.qq", choiceNames=x, choiceValues=x)
 })
+
+observe({
+  typs <- unique(v$df$IID)
+  updateSelectInput(session,"int.qq", choices = typs, selected = typs)
+})
+
 
 observe({
   switch (input$freq.qq,
@@ -41,12 +48,13 @@ prettyFmt <- function(f,sf=5) { formatC(signif(f,digits=sf), digits=sf, format="
 
 output$distr.qq.distr <- renderPlot({
   req(xl <- input$radio.qq)
-  if (!is.null(v$df$plt)){
+  req(iid <- input$int.qq)
+  if (!is.null(v$df)){
     xs <- as.character(xr.Nshrt[xl])
-    m <- v$df$plt %>% dplyr::select(!!ensym(xs))
+    df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
+    m <- df %>% dplyr::select(Val)
     
-    p <- v$df$plt %>%
-      ggplot(aes(!!ensym(xs))) +
+    p <- ggplot(df, aes(Val)) +
       theme_bw() +
       geom_density(size=1)
     
@@ -64,20 +72,20 @@ output$distr.qq.distr <- renderPlot({
     
     p + stat_function(fun = ddistr(), args = args, color='red') +
       geom_rug() + 
-      labs(title=v$title,x=xl)
+      labs(title=iid,x=xl)
   }
 })
 
 output$distr.qq <- renderPlot({
-  req(input$radio.qq)
+  req(xl <- input$radio.qq)
+  req(iid <- input$int.qq)
   if (!is.null(v$df$plt)){
-    xl <- input$radio.qq
     xs <- as.character(xr.Nshrt[xl])
     
     ggplot(v$df$plt, aes(sample = !!ensym(xs))) +
       theme_bw() +
       stat_qq(distribution = qdistr()) + 
       stat_qq_line(distribution = qdistr()) +
-      labs(title=paste0(v$title,": Q-Q plot"),y=xl)
+      labs(title=paste0(iid,": Q-Q plot"),y=xl)
   }
 })

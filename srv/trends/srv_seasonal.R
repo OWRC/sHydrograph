@@ -1,21 +1,28 @@
 
 observe({
-  x <- unname(unlist(v$typs)) #unname(xr.NLong[colnames(v$df$plt[-c(1)])])
-  # ss <- substring(x,1,regexpr("\\([^\\(]*$", x)-1)
+  req(i <- input$int.se)
+  x <- unname(xr.NLong[unique(v$df[v$df$IID==i,]$RDNC)])
   updateRadioButtons(session, "radio.se", choiceNames=x, choiceValues=x)
 })
 
 observe(updateDateRangeInput(session, "se.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
+observe({
+  typs <- unique(v$df$IID)
+  updateSelectInput(session,"int.se", choices = typs, selected = typs)
+})
+
+
 output$plt.se <- renderPlot({
   req(xl <- input$radio.se)
-  input$se.rng
-  if (!is.null(v$df$plt)){
+  req(rng <- input$se.rng)
+  req(iid <- input$int.se)
+  if (!is.null(v$df)){
     xs <- as.character(xr.Nshrt[xl])
     ylab <- xr.NLong[[xs]]
     
     # summarize by month
-    df <- v$df$plt[v$df$plt$Date >= input$se.rng[1] & v$df$plt$Date <= input$se.rng[2],] %>%
+    df <- v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]] & v$df$RDNC==xs & v$df$IID==iid,] %>%
       mutate(month = month(Date))
     df$wy = wtr_yr(df$Date)
     df$se <- ''
@@ -27,9 +34,9 @@ output$plt.se <- renderPlot({
     
     df <- df %>% group_by(wy,se_f)
     if ( xr.step[xs] ) {
-      df <- df %>% dplyr::summarise(stat = sum(!!ensym(xs), na.rm = TRUE), n = sum(!is.na(!!ensym(xs))))
+      df <- df %>% dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val)))
     } else {
-      df <- df %>% dplyr::summarise(stat = mean(!!ensym(xs), na.rm = TRUE), n = sum(!is.na(!!ensym(xs))))
+      df <- df %>% dplyr::summarise(stat = mean(Val, na.rm = TRUE), n = sum(!is.na(Val)))
     }
     if (nrow(df[df$n==0,])>0) df[df$n==0,]$stat <- NA
     
@@ -38,7 +45,7 @@ output$plt.se <- renderPlot({
       geom_step(na.rm = TRUE) + 
       geom_smooth(na.rm=TRUE) +
       facet_grid(rows = vars(se_f), scales = "free") +
-      ggtitle(v$title) + 
+      ggtitle(iid) + 
       ylab(ylab) + xlab('water year (oct-sept)') + 
       scale_x_continuous(breaks= pretty_breaks())
     
