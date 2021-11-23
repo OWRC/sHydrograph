@@ -18,19 +18,20 @@ fluidPage(
       numericInput('ax.rsmpl','number of boostrap resamples',10000,min=1000,max=100000),
       numericInput('ax.ci','confidence interval',0.9,min=0.05,max=0.999,step=0.01),
       actionButton('ax.regen',"Regenerate"),
-      width=3
+      width=2
     ),
     mainPanel(
-      plotOutput('ax.h', height='600px'),
       column(6,
+             plotOutput('ax.h', height='500px'),
              plotOutput('ax.dist', height='200px')
       ),
       column(6,
+             plotOutput('ax.rnk', height='500px'),
              plotOutput('ax.hist', height='200px')
       ), br(),
       shiny::includeMarkdown("md/rightclick.md"),
       shiny::includeMarkdown("md/extreme.md"),
-      width=9
+      width=10
     )
   )
 )

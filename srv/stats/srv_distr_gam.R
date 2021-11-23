@@ -11,14 +11,23 @@ observe({
 })
 
 
-applyColour <- function(df1,p,asPoints=FALSE){
-  df <- df1 %>% 
+applyGAM <- function(df,k,asPoints=FALSE){
+  
+  
+  p <- df %>%
+    mutate(doy=as.numeric(strftime(Date, format="%j"))) %>%
+    dplyr::select(doy,Val) %>%
+    drop_na() %>% 
+    GAM(k=k)
+
+  
+  df <- df %>% 
     dplyr::select(c(Date,Val)) %>%
     drop_na() %>%        
     mutate(doy=as.numeric(strftime(Date, format="%j")),
            year=as.factor(strftime(Date, format="%Y")),
            dateday=as.Date(doy, origin = "2016-01-01"))
-  
+
   # p + geom_line(data=df, aes(dateday,Val,group=year,color=year)) +
   #   coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
   
@@ -75,17 +84,12 @@ output$distr.gam <- renderPlot({
   if (!is.null(v$df)) {
     xs <- as.character(xr.Nshrt[xl])
     df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
-    df1 <- df %>%
-      mutate(doy=as.numeric(strftime(Date, format="%j"))) %>%
-      dplyr::select(doy,Val) %>%
-      drop_na()
-    
-    if ( nrow(df1)<=12 ) {
+    if ( nrow(df)<=12 ) {
       ggplot() + 
         annotate("text", x = as.Date('2016-07-01'), y = 0, size=6, label = 'Not enough data, please select another parameter') + 
         theme_void() 
     } else {
-      plts <- list( applyColour(df1, df1 %>% GAM(k=k) + labs(title=iid,y=xl), xs), gghighlow(df) )
+      plts <- list( applyGAM(df, k) + labs(title=iid,y=xl), gghighlow(df) )
       cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
     }
   }

@@ -41,7 +41,7 @@ output$distr.m.h <- renderPlot({
           quantile_lines = TRUE
         ) +
         scale_fill_manual(
-          name = "Probability", values = c("#FF0000A0", "#A0A0A0A0", "#A0A0A0A0", "#0000FFA0"),
+          name = "Probability", values = c("#FF0000A0", "#A0A0A0A0", "#A0A0A0A0", "#FF0000A0"),
           labels = c("(0, 0.025]", "(0.025, 0.5]", "(0.5, 0.975]", "(0.975, 1]")
         ) +
         labs(title=iid,x=xl) 

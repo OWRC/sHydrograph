@@ -12,14 +12,14 @@ observeEvent(input$plt.raw_date_window, { updated_date_window(input$plt.raw_date
 
 observeEvent(input$dt.rng, { updated_date_selector(input$dt.rng) })
 
-
 observe({
   updateDateRangeInput(session, "dt.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe)
   r.rngselect = c(v$DTb, v$DTe)
 })
 
 observe({
-  x <- unname(unlist(v$typs))
+  # x <- unname(unlist(v$typs))
+  x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.raw,]$RDNC)])
   s <- x[x != "Temperature (Water) - Logger (°C)"] # default layers to uncheck
   if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
@@ -32,14 +32,15 @@ observe({
 })
 
 output$info.main <- renderUI({
-  DTb <- as.Date(strftime(req(input$dt.rng[[1]]), "%Y-%m-%d"))
-  DTe <- as.Date(strftime(req(input$dt.rng[[2]]), "%Y-%m-%d"))
+  req(rng <- input$dt.rng)
+  DTb <- as.Date(strftime(rng[[1]], "%Y-%m-%d"))
+  DTe <- as.Date(strftime(rng[[2]], "%Y-%m-%d"))
   vis <- input$chkData
   isolate({
     if (!is.null(v$df$plt)){
-      df2 <- subset(v$df$plt, Date>=DTb & Date<=DTe)
-      nam <- unname(xr.NLong[colnames(v$df$plt)[2:ncol(v$df$plt)]])
-      stat <- colMeans(df2[2:ncol(v$df$plt)], na.rm = TRUE) #*(xr.step[xr.Nshrt[nam]]*364.24+1)
+      df2 <- subset(v$df, Date>=DTb & Date<=DTe)
+      nam <- unname(xr.NLong[colnames(v$df)[2:ncol(v$df)]])
+      stat <- colMeans(df2[2:ncol(v$df)], na.rm = TRUE) #*(xr.step[xr.Nshrt[nam]]*364.24+1)
 
       df2 <- df2[c('Date',xr.Nshrt[vis])]
       df2 <- df2[rowSums(is.na(df2)) != ncol(df2)-1, ]

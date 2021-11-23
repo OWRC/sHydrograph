@@ -7,8 +7,9 @@ fluidPage(
     sidebarPanel(
       selectInput("int.qq", "Choose interval:", choices=NULL),
       radioButtons("radio.qq", "Choose data type:",choices=c("dummy")),
-      selectInput('freq.qq', 'Choose distribution model', c('Uniform','Normal','Exponential'), selected='Normal'),
       shiny::includeMarkdown("md/notes.md"),
+      selectInput('freq.qq', 'Choose distribution model:', c('Uniform','Normal','Exponential'), selected='Normal'),
+      checkboxInput("chkpos.qq", ">0 values only", value=FALSE), 
       htmlOutput('info.qq')
     ),
     mainPanel(

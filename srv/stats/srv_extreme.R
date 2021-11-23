@@ -138,13 +138,38 @@ extreme_histogram <- function(hds, ismn=FALSE){
   df$mnt <- format(df$date, "%b")
   df$mnt <- ordered(df$mnt, levels = c('Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'))
   
-  p <- ggplot(df,aes(mnt)) +
+  ggplot(df,aes(mnt)) +
     theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), panel.grid.minor = element_line(colour = "#808080")) +
     geom_histogram(stat='count') +
     scale_x_discrete(drop = FALSE) +
-    labs(x=NULL, title=NULL)
+    labs(x='monthly distribution of annual extremes', title=NULL)
+}
+
+extreme_rank <- function(df,ylab,ismn='min'){
+  df <- df %>%
+    mutate(year = year(Date)) %>%
+    group_by(year) 
   
-  return(p)
+  if (ismn=='min') {
+    df <- df %>% dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val)))
+  } else {
+    df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val)))
+  }
+  
+  if (nrow(df[df$n==0,])>0) df[df$n==0,]$stat <- NA # clean missing
+  df$stat <- df$stat - mean(df$stat, na.rm = TRUE)  # get anomalies      
+  
+  ggplot(df, aes(reorder(year, -stat),stat,fill=year)) +
+    theme_bw() +
+    theme(legend.justification = c(0, 0),legend.position = c(.01, .01), 
+          legend.title = element_blank(),
+          legend.background=element_rect(fill="transparent")) +
+    theme(axis.text.x=element_blank(),axis.title.x=element_blank()) +
+    geom_bar(stat="identity") + 
+    geom_text(aes(label=year),angle = 90,hjust=1.1) +
+    scale_fill_binned(type = "viridis") + 
+    labs(y=ylab, title=paste0(v$title,'\nRanked anomalies of extreme annual ',ismn)) +
+    ylim(c(1.1*min(df$stat),NA))
 }
 
 
@@ -171,12 +196,25 @@ output$ax.h <- renderPlot({
   })
 })
 
+output$ax.rnk <- renderPlot({
+  req(xl <- input$radio.ax)
+  req(iid <- input$int.ax)
+  input$ax.regen
+  withProgress(message = 'rendering rank..', value = 0.8, isolate(
+    if (!is.null(v$df)){
+      xs <- as.character(xr.Nshrt[xl])
+      xlab <- paste0(xr.NLong[[xs]],'\nrank of annual extremes')
+      extreme_rank(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, input$ax.mnmx)
+    }
+  ))
+})
+
 output$ax.dist <- renderPlot({
   req(xl <- input$radio.ax)
   req(iid <- input$int.ax)
   input$ax.regen
   isolate(
-    if (!is.null(v$df$orig)){
+    if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\ndistribution of annual extremes')
       
@@ -189,11 +227,11 @@ output$ax.dist <- renderPlot({
 })
 
 output$ax.hist <- renderPlot({
-  req(input$radio.ax)
+  req(iid <- input$int.ax)
+  req(xl <- input$radio.ax)
   input$ax.regen
   isolate(
-    if (!is.null(v$df$orig)){
-      xl <- input$radio.ax
+    if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       ismn <- input$ax.mnmx=='min'
       withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), ismn)})

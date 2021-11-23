@@ -52,6 +52,9 @@ output$distr.qq.distr <- renderPlot({
   if (!is.null(v$df)){
     xs <- as.character(xr.Nshrt[xl])
     df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
+    
+    if (input$chkpos.qq) {  df <- df[df$Val>0,]  }
+    
     m <- df %>% dplyr::select(Val)
     
     p <- ggplot(df, aes(Val)) +
@@ -79,13 +82,15 @@ output$distr.qq.distr <- renderPlot({
 output$distr.qq <- renderPlot({
   req(xl <- input$radio.qq)
   req(iid <- input$int.qq)
-  if (!is.null(v$df$plt)){
+  if (!is.null(v$df)){
     xs <- as.character(xr.Nshrt[xl])
-    
-    ggplot(v$df$plt, aes(sample = !!ensym(xs))) +
-      theme_bw() +
-      stat_qq(distribution = qdistr()) + 
-      stat_qq_line(distribution = qdistr()) +
-      labs(title=paste0(iid,": Q-Q plot"),y=xl)
+    df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
+    if (input$chkpos.qq) {  df <- df[df$Val>0,]  }
+    df %>%
+      ggplot(aes(sample = Val)) +
+        theme_bw() +
+        stat_qq(distribution = qdistr()) + 
+        stat_qq_line(distribution = qdistr()) +
+        labs(title=paste0(iid,": Q-Q plot"),y=xl)
   }
 })

@@ -6,7 +6,7 @@ GAM <- function(df, k=20) {
   # https://www.r-bloggers.com/2016/12/simultaneous-intervals-for-smooths-revisited/
   # see also gam-test.R
   # simultaneous interval for a penalised spline in a fitted GAM
-  m <- gam(Val ~ s(doy, k = k), data = df) #, method = "REML")
+  m <- mgcv::gam(Val ~ s(doy, k = k), data = df) #, method = "REML")
   #  k = 20 is the basis dimension of the spline
   #  method = “REML”, the penalised spline model is expressed as a linear mixed model with the wiggly bits of the spline treated as random effects, and is estimated using restricted maximum likelihood; method = “ML” would also work here
   
