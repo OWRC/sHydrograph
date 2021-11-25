@@ -18,8 +18,9 @@ xr.RDNC <- c("447"="Pump",
              "70871"="Temp",
              # "71212"="AtmosYld",
              "1001"="StrmFlw",
-             "Rf"="Rainfall",
-             "Sm"="Snowmelt") #, #"611"="Wlvlx", "612"="Wlvln", 
+             "Rf"="iRainfall",
+             "Sm"="iSnowmelt",
+             "Pa"="iAirPressure") #, #"611"="Wlvlx", "612"="Wlvln", 
 
 xr.Nindx <- setNames(names(xr.RDNC), unname(xr.RDNC)) #reverses above named list
 
@@ -35,13 +36,14 @@ xr.NLong <- c(
     # "Wlvln"="Water Level - Logger - Min (Compensated & Corrected)",
     "WtrLvl"="Water Level - Logger (Compensated & Corrected-masl)",
     "WtrLvl.s"="Water Level - Manual - Static (masl)",
+    "StrmFlw"="Stream flow (cms)",
     "Temp"="Temperature (Water) - Logger (°C)",
     "Pump"="Production (m3/d)",
     "Precip"="Precipitation (mm)",
-    "Rainfall"="Rainfall¹ (mm)",
-    "Snowmelt"="Snowmelt¹ (mm)",
+    "iRainfall"="Rainfall¹ (mm)",
+    "iSnowmelt"="Snowmelt¹ (mm)",
+    "iAirPressure"="AirPressure¹ (kPa)"
     # "AtmosYld"="Atmospheric Yield (mm)",
-    "StrmFlw"="Stream flow (cms)"
     )
 
 xr.Nshrt <- setNames(names(xr.NLong), unname(xr.NLong)) #reverses above named list
@@ -85,8 +87,9 @@ xr.step <- c(
   "Rain"=TRUE,
   "Snow"=TRUE,
   "Precip"=TRUE,
-  "Rainfall"=TRUE,
-  "Snowmelt"=TRUE,
+  "iRainfall"=TRUE,
+  "iSnowmelt"=TRUE,
+  "iAirPressure"=FALSE,
   "PackDepth"=TRUE,
   # "AtmosYld"=TRUE,
   "StrmFlw"=TRUE

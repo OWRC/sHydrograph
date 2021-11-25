@@ -58,10 +58,11 @@ collect_interval <- function(INT_ID,vTemporal=2) {
       if (!is.null(dfInterp)) {
         dfInterp <- dfInterp %>% 
           subset( Date >= v$DTb  &  Date <= v$DTe ) %>%
-          dplyr::select(-one_of(c('Tn','Tx','Sf','Pa'))) %>% # drop columns
+          dplyr::select(-one_of(c('Tn','Tx','Sf'))) %>% # drop columns
+          mutate(Pa=Pa/1000) %>%
           gather(RDNC,Val,-Date) %>%
           drop_na() %>%
-          mutate( IID = v$nam[as.character(INT_ID)],
+          mutate( IID = "interpolated", #v$nam[as.character(INT_ID)],
                   unit = xr.unit[RDNC],
                   RDTC = "interpolated",
                   grp = xr.group[RDNC],

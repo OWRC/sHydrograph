@@ -17,9 +17,11 @@ observeEvent(input$plt.sca_dblclick, {
 observe({ updateDateRangeInput(session, "rng.sca", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe) })
 
 observe({
-  typs <- unique(v$df %>% arrange(RDNC,IID) %>% mutate(sel=paste0(IID,"-",RDNC)) %>% pull(sel))
-  updateSelectInput(session,"cmbX.sca", choices = typs, selected = typs)
-  updateSelectInput(session,"cmbY.sca", choices = typs, selected = typs)
+  if (!is.null(v$df)) {
+    typs <- unique(v$df %>% arrange(RDNC,IID) %>% mutate(sel=paste0(IID,"-",RDNC)) %>% pull(sel))
+    updateSelectInput(session,"cmbX.sca", choices = typs, selected = typs)
+    updateSelectInput(session,"cmbY.sca", choices = typs, selected = typs)    
+  }
 })
 
 

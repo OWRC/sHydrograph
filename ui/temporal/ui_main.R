@@ -29,8 +29,8 @@ fluidPage(
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Viewer", br(), dygraphOutput("plt.raw")),
-                  tabPanel("Printable", br(),
+                  tabPanel("Raw view", br(), dygraphOutput("plt.raw")),
+                  tabPanel("Faceted", br(),
                            fluidRow(plotOutput("plt.print")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))
                   ),

@@ -20,14 +20,17 @@ observe({
 observe({
   # x <- unname(unlist(v$typs))
   x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.raw,]$RDNC)])
-  s <- x[x != "Temperature (Water) - Logger (°C)"] # default layers to uncheck
+  s <- x[x != "Temperature (Water) - Logger (°C)" & x != "AirPressure¹ (kPa)"] # default layers to uncheck
   # if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
   if (is.null(v$scrn)) hide("chkScrn")
 })
 
 observe({
-  x <- unname(unlist(v$nam))
+  print(unname(unlist(v$nam)))
+  print(unique(v$df$IID))
+  # x <- unname(unlist(v$nam))
+  x <- unique(v$df$IID)
   updatePickerInput(session,"pck.raw", choices = x, selected = x)
 })
 
@@ -90,11 +93,14 @@ output$plt.print <- renderPlot({
         ) +
         geom_step(data = pick(grp == "Temperature (°C)"), aes(colour=IID)) +
         geom_line(data = pick(RDNC == "WtrLvl"),aes(colour=IID)) +
+        geom_line(data = pick(grp == "Atmospheric Pressure (kPa)"),aes(colour=IID)) +
         geom_area(data = pick(RDNC == "PackDepth"),aes(colour=IID,fill=RDNC)) +
         geom_line(data = pick(grp == "Stream flow (m³/s)"), aes(colour=IID)) +
         geom_point(data = pick(RDNC == "WtrLvl.s"), aes(colour=IID)) +
         geom_col(data = pick(grp == "Precipitation (mm)"), aes(fill=RDNC), position=position_stack()) +
-        geom_col(data = pick(grp == "Production (m³/d)"), aes(fill=IID), position=position_dodge()) +
+        geom_col(data = pick(grp == "Production (m³/d)"), aes(colour=IID,fill=RDNC), position=position_dodge()) +
+        scale_fill_manual(breaks = c("PackDepth", "Precip", "Rain", "iRainfall", "Snow", "iSnowmelt", "Pump"), 
+                          values=c("#b2b2b2b2", "#33a02c", "#1f78b4", "#1f78b4", "#b2df8a", "#a6cee3", "#fb9a99")) +
         facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left")
     })
   }
@@ -109,7 +115,7 @@ qxts_series <- reactive({
   xs <- as.character(xr.Nshrt[xl])
   
   # grab climate data 
-  mdf <- v$df[v$df$RDNC %in% xs[xs == "Rainfall" | xs == "Snowmelt"],] %>% # c('Rainfall','Snowmelt'),]
+  mdf <- v$df[v$df$RDNC %in% xs[xs == "iRainfall" | xs == "iSnowmelt" | xs == "iAirPressure"],] %>% # c('Rainfall','Snowmelt'),]
     dplyr::select(-one_of(c('IID','RDTC','unit','grp'))) %>%
     spread(key=RDNC, value=Val)
   
@@ -120,7 +126,7 @@ qxts_series <- reactive({
     group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
     mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
     spread(key=RDNC, value=Val) %>%
-    dplyr::select(-one_of(c('row_id','Rainfall','Snowmelt')))
+    dplyr::select(-one_of(c('row_id','iRainfall','iSnowmelt','iAirPressure')))
   
   if ( dim(sdf)[2] < 3 ) {
     sdf <- NULL
@@ -151,8 +157,8 @@ qxts_series <- reactive({
 })
 
 
-y2.add <- function(dg, colnam, legendnam) {
-  dg %>% dyBarSeries(colnam, axis = 'y2', color = "#4daf4aBF", label = legendnam)
+y2.add <- function(dg, colnam, legendnam, colour) {
+  dg %>% dyBarSeries(colnam, axis = 'y2', color = colour, label = legendnam)
   # dySeries(colnam, axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = legendnam)
 }
 
@@ -169,25 +175,28 @@ output$plt.raw <- renderDygraph({
     y2max = 150
     pp <- grep("Pump", cn, value = TRUE)
     if (length(pp) > 0) {
-      dg <- y2.add(dg,"Pump",'production')
+      dg <- y2.add(dg,"Pump",'production',"#fb9a99")
       y2max = max(v$df[v$df$grp == "Production (m³/d)",]$Val, na.rm=TRUE) * 2
     }
-    if ("Snowmelt" %in% cn) { dg <- y2.add(dg,"Snowmelt",'snowmelt') }
-    if ("Snow" %in% cn) { dg <- y2.add(dg,"Snow",'snowfall') }
-    if ("Rain" %in% cn) { dg <- y2.add(dg,"Rain",'rainfall') }
-    if ("Precip" %in% cn) { dg <- y2.add(dg,"Precip",'precipiation') }
-    if ("Rainfall" %in% cn) { dg <- y2.add(dg,"Rainfall",'rainfall') }
-
-    dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='Rainfall' & xs!='Snowmelt' & xs!='Pump'] & v$df$IID %in% iids,]$Val
+    if ("iSnowmelt" %in% cn) { dg <- y2.add(dg,"iSnowmelt",'snowmelt',"#a6cee3") }
+    if ("Snow" %in% cn) { dg <- y2.add(dg,"Snow",'snowfall',"#b2df8a") }
+    if ("Rain" %in% cn) { dg <- y2.add(dg,"Rain",'rainfall',"#1f78b4") }
+    if ("iRainfall" %in% cn) { dg <- y2.add(dg,"iRainfall",'rainfall',"#1f78b4") }
+    if ("Precip" %in% cn) { dg <- y2.add(dg,"Precip",'precipiation',"#33a02c") }
+    
+    dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='iRainfall' & xs!='iSnowmelt' & xs!='Pump'] & v$df$IID %in% iids,]$Val
     dg <- dg %>%
       dyAxis('y', label=NULL, valueRange = c(min(dd),max(dd))) %>% #as.character(xl[cn[cn != "Date" & cn != "Rain" & cn != "Snow" & cn != "Rainfall" & cn != "Snowmelt" & cn != "Pump"]])) %>% # , axisLabelWidth=100
-      dyAxis('y2', label=as.character(cn[cn == "Rain" | cn == "Snow" | cn == "Precip" | cn == "Rainfall" | cn == "Snowmelt" | cn == "Pump"]), valueRange = c(y2max, 0)) %>%
-      dyRangeSelector(fillColor = '', height=40, dateWindow = rng, retainDateWindow = TRUE) %>%
-      dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE) # %>%  # 
+      dyAxis('y2', label=as.character(cn[cn == "Rain" | cn == "Snow" | cn == "Precip" | cn == "iRainfall" | cn == "iSnowmelt" | cn == "Pump"]), 
+             independentTicks = TRUE,
+             drawGrid = FALSE,
+             valueRange = c(y2max, 0)) %>%
+      dyRangeSelector(fillColor = '', strokeColor = '', height=20, dateWindow = rng, retainDateWindow = TRUE) %>%
+      dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE)
       # dyLegend(show = "follow")
 
     if ( !is.null(v$scrn) && input$chkScrn ) {
-      # dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='Rainfall' & xs!='Snowmelt' & xs!='Pump'],]$Val
+      # dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='iRainfall' & xs!='iSnowmelt' & xs!='Pump'],]$Val
       nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
       xscr <- max(c(max(dd[dd>0],na.rm=TRUE),max(v$scrn)))
       buf <- .05*(xscr-nscr)
