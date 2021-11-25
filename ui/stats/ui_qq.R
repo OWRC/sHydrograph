@@ -9,7 +9,7 @@ fluidPage(
       radioButtons("radio.qq", "Choose data type:",choices=c("dummy")),
       shiny::includeMarkdown("md/notes.md"),
       selectInput('freq.qq', 'Choose distribution model:', c('Uniform','Normal','Exponential'), selected='Normal'),
-      checkboxInput("chkpos.qq", ">0 values only", value=FALSE), 
+      checkboxInput("chkpos.qq", "log-transformed", value=FALSE), 
       htmlOutput('info.qq')
     ),
     mainPanel(

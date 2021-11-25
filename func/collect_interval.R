@@ -1,5 +1,12 @@
 
 
+collect_interval_loc <- function(LOC_ID,vTemporal=2) {
+  print(paste0(' -> LOC_ID: ', LOC_ID))
+  qloc <- qLocInfo(LOC_ID)
+  collect_interval(qloc$INT_ID[1],vTemporal)
+}
+
+
 collect_interval <- function(INT_ID,vTemporal=2) {
   jsonfp <- NULL
   if ( !is.numeric(INT_ID)) {
@@ -9,57 +16,61 @@ collect_interval <- function(INT_ID,vTemporal=2) {
   
   print(paste0(' -> INT_ID: ', INT_ID))
   isolate(withProgress(message = 'querying station data..', value = 0.1, {
-    nam <- qIntName(INT_ID)
+    v$meta <- qIntInfo(INT_ID) #%>%
+      # dplyr::select(c(LOC_ID,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
     v$scrn <- qIntScreen(INT_ID)
-    v$icoord <- qIntCoord(INT_ID)    
 
     nest <- qNest(INT_ID)
     setProgress(0.5,"querying observations..")
     if (length(nest) == 0) {
-      if (length(nam)>1) { v$inam <- paste0(nam[[1]], ": ", nam[[2]]) }  else  {  v$inam <- nam[[1]]  }
-      names(v$inam) <- INT_ID
+      v$nam <- paste0(v$meta$INT_NAME[1], ": ", v$meta$INT_NAME_ALT1[1])
+      names(v$nam) <- INT_ID
       if (is.null(jsonfp)) {
-        v$df <- characterMap(qTemporal(INT_ID, vTemporal) %>% mutate(IID=INT_ID),v$inam)
+        v$df <- characterMap(qTemporal(INT_ID, vTemporal) %>% mutate(IID=INT_ID),v$nam)
       } else {
-        v$df <- characterMap(qTemporal_json(jsonfp) %>% mutate(IID=INT_ID),v$inam)
+        v$df <- characterMap(qTemporal_json(jsonfp) %>% mutate(IID=INT_ID),v$nam)
       }
-      v$title <- v$inam[[1]]
+      v$title <- v$nam[[1]]
     } else {
       showNotification("interval nest found, querying..")
-      v$inam <- sapply(nest, function(x) qIntName(x)$INT_NAME)
-      names(v$inam) <- nest
+      v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") %>%
+        dplyr::select(c(LOC_ID,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
+      v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
+      names(v$nam) <- nest
       if (is.null(jsonfp)) {
         qt <- qTemporal_nest(nest,vTemporal)
-        v$inam <- v$inam[names(v$inam) %in% unique(qt$IID)]
-        v$df <- characterMap(qt,v$inam)
+        v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
+        v$df <- characterMap(qt,v$nam)
       } else {
         qt <- qTemporal_json(jsonfp)
-        v$inam <- v$inam[names(v$inam) %in% unique(qt$IID)]
-        v$df <- characterMap(qt,v$inam)
+        v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
+        v$df <- characterMap(qt,v$nam)
       }
-      v$title <- paste(unname(unlist(v$inam)), collapse = '; ')  
+      v$title <- paste(unname(unlist(v$nam)), collapse = '; ')  
     }   
     
     v$DTb <- min(v$df$Date)
     v$DTe <- max(v$df$Date) 
    
-    setProgress(0.6,"interpolating to location..")
-    dfInterp <- qInterp(v$icoord$LONG,v$icoord$LAT) 
-    if (!is.null(dfInterp)) {
-      dfInterp <- dfInterp %>% 
-        subset( Date >= v$DTb  &  Date <= v$DTe ) %>%
-        dplyr::select(-one_of(c('Tn','Tx','Sf','Pa'))) %>% # drop columns
-        gather(RDNC,Val,-Date) %>%
-        drop_na() %>%
-        mutate( IID = v$inam[as.character(INT_ID)],
-                unit = xr.unit[RDNC],
-                RDTC = "interpolated",
-                grp = xr.group[RDNC],
-                RDNC = xr.RDNC[RDNC] )
-      
-      # print(head(v$df, 3))
-      # print(head(dfInterp, 3))
-      v$df <- rbind(v$df, dfInterp) #%>% arrange(Date)
+    if (vTemporal!=3) {
+      setProgress(0.6,"interpolating to location..")
+      dfInterp <- qInterp(v$meta$LONG[1],v$meta$LAT[1]) 
+      if (!is.null(dfInterp)) {
+        dfInterp <- dfInterp %>% 
+          subset( Date >= v$DTb  &  Date <= v$DTe ) %>%
+          dplyr::select(-one_of(c('Tn','Tx','Sf','Pa'))) %>% # drop columns
+          gather(RDNC,Val,-Date) %>%
+          drop_na() %>%
+          mutate( IID = v$nam[as.character(INT_ID)],
+                  unit = xr.unit[RDNC],
+                  RDTC = "interpolated",
+                  grp = xr.group[RDNC],
+                  RDNC = xr.RDNC[RDNC] )
+        
+        # print(head(v$df, 3))
+        # print(head(dfInterp, 3))
+        v$df <- rbind(v$df, dfInterp) #%>% arrange(Date)
+      }      
     }
     print(head(v$df, 3)) 
     v$typs <- xr.NLong[unique(v$df$RDNC)]

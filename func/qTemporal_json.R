@@ -1,5 +1,6 @@
 
 
+
 qTemporal_json <- function(fp) {
   print(fp)
   df <- tryCatch(
@@ -16,5 +17,9 @@ qTemporal_json <- function(fp) {
     },
     finally={}
   )
+  if (is.null(df)) {
+    showNotification(paste0("Error: invalid URL"))
+    return(NULL)  
+  }
   return(qTemporal_clean(df))
 }

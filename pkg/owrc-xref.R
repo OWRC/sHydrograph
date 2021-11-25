@@ -2,7 +2,7 @@
 
 pltcol <- c("#ef8a62","#43a2ca")
 
-xr.Ignore <- c(163,369,449,608,609,611,612,633,645,748,758,760,761,762,763,764,765,860,861,10854,10859,70813,70868,70872,70899,70903,70977,71025,71026,71212)
+xr.Ignore <- c(163,369,449,608,609,611,612,633,645,748,758,760,761,762,763,764,765,860,861,10854,10859,70813,70868,70872,70899,70903,70977,71025,71026,71207,71208,71209,71212,71213)
 
 xr.RDNC <- c("447"="Pump",
              "546"="Tmax", 
@@ -54,7 +54,7 @@ xr.group <- c(
   "Tmean"="Temperature (°C)",
   "Rain"="Precipitation (mm)",
   "Snow"="Precipitation (mm)",
-  # "PackDepth"="Snowpack depth (cm)",
+  "PackDepth"="Snowpack depth (cm)",
   # # "Wlvlx"="Water Level - Logger - Max (Compensated & Corrected)",
   # # "Wlvln"="Water Level - Logger - Min (Compensated & Corrected)",
   "WtrLvl"="Waterlevel (masl)",
@@ -75,16 +75,20 @@ xr.step <- c(
   "Stage"=FALSE,
   "Tmax"=FALSE, 
   "Tmin"=FALSE,
+  "Tmean"=FALSE,
   # "Wlvlx"=FALSE,
   # "Wlvln"=FALSE,
   "WtrLvl"=FALSE,
   "WtrLvl.s"=FALSE,
   "Temp"=FALSE,
   "Pump"=TRUE,
+  "Rain"=TRUE,
+  "Snow"=TRUE,
   "Precip"=TRUE,
   "Rainfall"=TRUE,
   "Snowmelt"=TRUE,
-  "AtmosYld"=TRUE,
+  "PackDepth"=TRUE,
+  # "AtmosYld"=TRUE,
   "StrmFlw"=TRUE
 )
 

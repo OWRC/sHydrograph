@@ -53,10 +53,10 @@ output$distr.qq.distr <- renderPlot({
     xs <- as.character(xr.Nshrt[xl])
     df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
     
-    if (input$chkpos.qq) {  df <- df[df$Val>0,]  }
+    if (input$chkpos.qq) {  df <- df[df$Val>0,] %>% mutate(Val=log(Val))  }
     
-    m <- df %>% dplyr::select(Val)
-    
+    m <- df %>% dplyr::select(Val) %>% drop_na()
+    print(max(m))
     p <- ggplot(df, aes(Val)) +
       theme_bw() +
       geom_density(size=1)

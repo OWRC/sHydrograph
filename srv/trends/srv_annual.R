@@ -25,7 +25,9 @@ summary_annual <- function(df,relative=FALSE){
   
   # summarize by year
   df1 <- df[df$RDNC==xs & df$IID==iid,] %>%
+    drop_na(Val) %>%
     mutate(year = year(Date)) %>%
+    subset(year>min(year)) %>%
     group_by(year)
 
   if ( xr.step[xs] ) {

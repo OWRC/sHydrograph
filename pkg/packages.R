@@ -21,6 +21,7 @@ library(dygraphs)
 library(xts)
 library(fs)
 library(MASS)
+library(Kendall)
 require(curl)
 
 

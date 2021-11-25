@@ -20,6 +20,7 @@ tabPanel("Data table",
    width=2
   ),
   mainPanel(
+   dataTableOutput('tabiids'),
    dataTableOutput('tabts'),
    width=10
   )

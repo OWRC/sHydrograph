@@ -146,14 +146,27 @@ extreme_histogram <- function(hds, ismn=FALSE){
 }
 
 extreme_rank <- function(df,ylab,ismn='min'){
-  df <- df %>%
+  df <- df %>% drop_na(Val) %>%
     mutate(year = year(Date)) %>%
     group_by(year) 
   
   if (ismn=='min') {
     df <- df %>% dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val)))
+    ttl <- paste0(v$title,'\nranked anomalies of extreme annual minima')
   } else {
     df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val)))
+    ttl <- paste0(v$title,'\nranked anomalies of extreme annual maxima')
+  }
+  
+  # Mann-Kendall test for trend
+  ts1 <- ts(df, start=min(df$year), end=max(df$year), frequency=1) 
+  MK = MannKendall(ts1)
+  if (MK$sl[1] < 0.001) {
+    trnd <- paste0('Mann-Kendall tau: ',round(MK$tau[1],3),' (p < 0.001)')
+  } else if (MK$sl[1] < 0.05) {
+    trnd <- paste0('Mann-Kendall tau: ',round(MK$tau[1],3),' (p = ',round(MK$sl[1],3),')')
+  } else {
+    trnd <- 'no significant trend'
   }
   
   if (nrow(df[df$n==0,])>0) df[df$n==0,]$stat <- NA # clean missing
@@ -168,7 +181,7 @@ extreme_rank <- function(df,ylab,ismn='min'){
     geom_bar(stat="identity") + 
     geom_text(aes(label=year),angle = 90,hjust=1.1) +
     scale_fill_binned(type = "viridis") + 
-    labs(y=ylab, title=paste0(v$title,'\nRanked anomalies of extreme annual ',ismn)) +
+    labs(y=ylab, title=paste0(ttl,' - ',trnd)) +
     ylim(c(1.1*min(df$stat),NA))
 }
 
@@ -184,14 +197,12 @@ output$ax.h <- renderPlot({
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\nfrequency of annual extremes')
-      
-      df1 <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
-      
       ismn <- input$ax.mnmx=='min'
       mdl <- input$ax.freq
       nrsm <- input$ax.rsmpl
       ci <- input$ax.ci
-      withProgress(message = 'rendering plots..', value = 0.1, {extreme_frequency(df1, xlab, mdl, nrsm, ci, ismn)})
+      df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]) %>% drop_na(Val)
+      withProgress(message = 'rendering plots..', value = 0.1, {extreme_frequency(df, xlab, mdl, nrsm, ci, ismn)})
     }
   })
 })
@@ -217,11 +228,8 @@ output$ax.dist <- renderPlot({
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\ndistribution of annual extremes')
-      
-      df1 <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,])
-      
       ismn <- input$ax.mnmx=='min'
-      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(df1, xlab, ismn)})
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, ismn)})
     }
   )
 })
