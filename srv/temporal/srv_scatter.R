@@ -30,16 +30,18 @@ output$plt.sca <- renderPlot ({
   ysel <- input$cmbY.sca
   df <- v$df %>% mutate(sel=paste0(IID,"-",RDNC))
   if (xsel==ysel) {
-    df[df$sel==xsel,] %>%
-      spread(sel,Val) %>%
-      ggplot(aes(!!ensym(xsel),!!ensym(ysel), color=factor(year(Date)))) +
-      theme(legend.position="bottom") +
-      scale_color_discrete(name = "Year") +
-      geom_point(aes(size=1)) +
-      coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
-      ggtitle(v$title)
+    p <- df[df$sel==xsel,] %>%
+          spread(sel,Val) %>%
+          ggplot(aes(!!ensym(xsel),!!ensym(ysel), color=year(Date))) +
+            theme_bw() + theme(legend.justification = c(1, 0),legend.position = c(.99, .01), 
+                  legend.title = element_blank(),
+                  legend.background=element_rect(fill="transparent")) +
+            scale_color_binned(type = "viridis") + 
+            geom_point(size=3) +
+            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
+            ggtitle(v$title)
   } else {
-    df[df$sel==xsel | df$sel==ysel,] %>%
+    p <- df[df$sel==xsel | df$sel==ysel,] %>%
       # mutate(date=as.Date(SAMPLE_DATE), p2=paste0(PARAMETER," (",UNIT,")")) %>%
       # mutate(p2=paste0(PARAMETER," (",UNIT,")")) %>%
       dplyr::select(Date,Val,sel) %>%
@@ -48,11 +50,18 @@ output$plt.sca <- renderPlot ({
       ungroup() %>%
       distinct() %>%
       spread(sel,Val) %>%
-      ggplot(aes(!!ensym(xsel),!!ensym(ysel), color=factor(year(Date)))) +
-      theme(legend.position="bottom") +
-      scale_color_discrete(name = "Year") +
-      geom_point(aes(size=1)) +
-      coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
-      ggtitle(v$title)
+      ggplot(aes(!!ensym(xsel),!!ensym(ysel), color=year(Date))) +
+        theme_bw() + theme(legend.justification = c(1, 0),legend.position = c(.99, .01), 
+              legend.title = element_blank(),
+              legend.background=element_rect(fill="transparent")) +
+      scale_color_binned(type = "viridis") +       
+      geom_point(size=3) +
+            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
+            ggtitle(v$title)
+  }
+  if (input$chk.11.sca) {
+    p + geom_abline(slope=1,intercept=0,linetype='dotted')
+  } else {
+    p
   }
 })

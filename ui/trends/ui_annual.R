@@ -6,7 +6,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
-      dateRangeInput("an.rng", label = "Choose date range"),
+      # dateRangeInput("an.rng", label = "Choose date range"),
       selectInput("int.an", "Choose interval:", choices=NULL),
       radioButtons("radio.an", "Choose data type:",choices=c("dummy")), br(),
       shiny::includeMarkdown("md/notes.md"),

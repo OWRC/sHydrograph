@@ -27,8 +27,6 @@ observe({
 })
 
 observe({
-  print(unname(unlist(v$nam)))
-  print(unique(v$df$IID))
   # x <- unname(unlist(v$nam))
   x <- unique(v$df$IID)
   updatePickerInput(session,"pck.raw", choices = x, selected = x)
@@ -38,179 +36,39 @@ output$info.main <- renderUI({
   req(rng <- input$dt.rng)
   DTb <- as.Date(strftime(rng[[1]], "%Y-%m-%d"))
   DTe <- as.Date(strftime(rng[[2]], "%Y-%m-%d"))
-  req(xl <- input$chkData)
   isolate({
-    if (!is.null(v$df)){
-      xs <- as.character(xr.Nshrt[xl])
-      df2 <- v$df[v$df$RDNC %in% xs & v$df$IID %in% input$pck.raw,] %>%
-        subset(Date>=DTb & Date<=DTe) %>%
-        group_by(RDNC) %>%
-        dplyr::summarise(stat = mean(Val, na.rm = TRUE), n = sum(!is.na(Val)))
-        
-      por <- as.integer(difftime(DTe, DTb, units = "days"))
-      a <- cbind(unname(xr.NLong[df2$RDNC]),round(df2$stat,1))
-      tb <- paste0('<tr><td>',a[,1],'&nbsp;&nbsp;</td><td align="right">', a[,2],'</td></tr>', collapse = "")
-      
-      shiny::HTML(paste0(
-        '<body>',
-        paste0(
-          strftime(DTb, "%b %Y"),' to ',strftime(DTe, "%b %Y"),' (',por+1,' days)</div>',
-          # '<div>total missing: ',por-ndat,' days (',round((1-ndat/por)*100,0),'%)</div>', br(),
-          # '<div>total data days: ',ndat,' (',round((ndat/por)*100,0),'%)</div>',
-          
-          '<div><h4>mean values:</h4></div>',
-          '<table>',tb,'</table>'
-        ),
-        '</body>'
-      ))   
-    }
+    por <- as.integer(difftime(DTe, DTb, units = "days"))
+    shiny::HTML(paste0(
+      '<body>',
+      paste0(
+        '<div><h4>Data summary:</h4></div>',
+        strftime(DTb, "%b %Y"),' to ',strftime(DTe, "%b %Y"),' (',por+1,' days)</div>'
+      ),
+      '</body>'
+    ))
   })
 })
 
-
-
-#####################
-## plots
-#####################
-## ggplot
-# https://stackoverflow.com/questions/35806310/ggplot-plotting-layers-only-if-certain-criteria-are-met
-pick <- function(condition){ function(d) d %>% filter(!!enquo(condition)) }
-
-output$plt.print <- renderPlot({
+output$tabsum <- renderFormattable({
   req(rng <- input$dt.rng)
   req(xl <- input$chkData)
-  if (!is.null(v$df)){
-    withProgress(message = 'building plot..', value = 0.1, {
-      xs <- as.character(xr.Nshrt[xl])
-      v$df[v$df$RDNC %in% xs & v$df$IID %in% input$pck.raw,] %>% 
-        subset( Date >= rng[[1]]  &  Date <= rng[[2]] ) %>%
-        ggplot(aes(Date,Val)) +
-        theme_bw() + theme(
-          axis.title=element_blank(),
-          legend.title=element_blank(),
-          strip.placement = "outside",
-          strip.background = element_blank()
-        ) +
-        geom_step(data = pick(grp == "Temperature (°C)"), aes(colour=IID)) +
-        geom_line(data = pick(RDNC == "WtrLvl"),aes(colour=IID)) +
-        geom_line(data = pick(grp == "Atmospheric Pressure (kPa)"),aes(colour=IID)) +
-        geom_area(data = pick(RDNC == "PackDepth"),aes(colour=IID,fill=RDNC)) +
-        geom_line(data = pick(grp == "Stream flow (m³/s)"), aes(colour=IID)) +
-        geom_point(data = pick(RDNC == "WtrLvl.s"), aes(colour=IID)) +
-        geom_col(data = pick(grp == "Precipitation (mm)"), aes(fill=RDNC), position=position_stack()) +
-        geom_col(data = pick(grp == "Production (m³/d)"), aes(colour=IID,fill=RDNC), position=position_dodge()) +
-        scale_fill_manual(breaks = c("PackDepth", "Precip", "Rain", "iRainfall", "Snow", "iSnowmelt", "Pump"), 
-                          values=c("#b2b2b2b2", "#33a02c", "#1f78b4", "#1f78b4", "#b2df8a", "#a6cee3", "#fb9a99")) +
-        facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left")
-    })
-  }
-})
-
-
-## Dygraph
-qxts_series <- reactive({
-  showNotification("rendering..")
-  req(xl <- input$chkData)
-  req(iids <- input$pck.raw)
-  xs <- as.character(xr.Nshrt[xl])
-  
-  # grab climate data 
-  mdf <- v$df[v$df$RDNC %in% xs[xs == "iRainfall" | xs == "iSnowmelt" | xs == "iAirPressure"],] %>% # c('Rainfall','Snowmelt'),]
-    dplyr::select(-one_of(c('IID','RDTC','unit','grp'))) %>%
-    spread(key=RDNC, value=Val)
-  
-  if ( dim(mdf)[2] < 2 ) { mdf <- NULL }
-
-  sdf <- v$df[v$df$RDNC %in% xs  &  v$df$IID %in% iids,] %>%
-    dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
-    group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
-    mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
-    spread(key=RDNC, value=Val) %>%
-    dplyr::select(-one_of(c('row_id','iRainfall','iSnowmelt','iAirPressure')))
-  
-  if ( dim(sdf)[2] < 3 ) {
-    sdf <- NULL
-  } else {
-    if (length(unique(v$df$IID)) > 1 ) {
-      sdf <- sdf %>% # combine IID and Variable
-        gather(variable, value, -(Date:IID)) %>%
-        unite(temp, IID, variable) %>%
-        group_by(Date, temp) %>%
-        dplyr::summarise(value = mean(value)) %>% # grouping and summarizing needed to remove duplicate rows
-        ungroup() %>%
-        spread(temp, value) %>%
-        dplyr::select(where(~!all(is.na(.x)))) # remove all-NA columns
-    }
-  }
-
-  # reintroduce climate
-  if (is.null(sdf) & is.null(mdf)) {
-    return(NULL)
-  } else if (is.null(mdf)) {
-    xts(sdf, order.by = sdf$Date)
-  } else if (is.null(sdf)) {
-    xts(mdf, order.by = mdf$Date)
-  } else {
-    sdf <- sdf %>% inner_join(mdf)
-    xts(sdf, order.by = sdf$Date)
-  }
-})
-
-
-y2.add <- function(dg, colnam, legendnam, colour) {
-  dg %>% dyBarSeries(colnam, axis = 'y2', color = colour, label = legendnam)
-  # dySeries(colnam, axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = legendnam)
-}
-
-output$plt.raw <- renderDygraph({
-  req(xl <- input$chkData)
   req(iids <- input$pck.raw)
   if (!is.null(v$df)){
-    rng <- r$rngselect+1
     xs <- as.character(xr.Nshrt[xl])
-    qxts <- qxts_series()
-    cn <- colnames(qxts)
-    dg <- dygraph(qxts)
-    
-    y2max = 150
-    pp <- grep("Pump", cn, value = TRUE)
-    if (length(pp) > 0) {
-      dg <- y2.add(dg,"Pump",'production',"#fb9a99")
-      y2max = max(v$df[v$df$grp == "Production (m³/d)",]$Val, na.rm=TRUE) * 2
-    }
-    if ("iSnowmelt" %in% cn) { dg <- y2.add(dg,"iSnowmelt",'snowmelt',"#a6cee3") }
-    if ("Snow" %in% cn) { dg <- y2.add(dg,"Snow",'snowfall',"#b2df8a") }
-    if ("Rain" %in% cn) { dg <- y2.add(dg,"Rain",'rainfall',"#1f78b4") }
-    if ("iRainfall" %in% cn) { dg <- y2.add(dg,"iRainfall",'rainfall',"#1f78b4") }
-    if ("Precip" %in% cn) { dg <- y2.add(dg,"Precip",'precipiation',"#33a02c") }
-    
-    dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='iRainfall' & xs!='iSnowmelt' & xs!='Pump'] & v$df$IID %in% iids,]$Val
-    dg <- dg %>%
-      dyAxis('y', label=NULL, valueRange = c(min(dd),max(dd))) %>% #as.character(xl[cn[cn != "Date" & cn != "Rain" & cn != "Snow" & cn != "Rainfall" & cn != "Snowmelt" & cn != "Pump"]])) %>% # , axisLabelWidth=100
-      dyAxis('y2', label=as.character(cn[cn == "Rain" | cn == "Snow" | cn == "Precip" | cn == "iRainfall" | cn == "iSnowmelt" | cn == "Pump"]), 
-             independentTicks = TRUE,
-             drawGrid = FALSE,
-             valueRange = c(y2max, 0)) %>%
-      dyRangeSelector(fillColor = '', strokeColor = '', height=20, dateWindow = rng, retainDateWindow = TRUE) %>%
-      dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE)
-      # dyLegend(show = "follow")
-
-    if ( !is.null(v$scrn) && input$chkScrn ) {
-      # dd <- v$df[v$df$RDNC %in% xs[xs!='Rain' & xs!='Snow' & xs!='Precip' & xs!='iRainfall' & xs!='iSnowmelt' & xs!='Pump'],]$Val
-      nscr <- min(c(min(dd[dd>0],na.rm=TRUE),min(v$scrn)))
-      xscr <- max(c(max(dd[dd>0],na.rm=TRUE),max(v$scrn)))
-      buf <- .05*(xscr-nscr)
-      dg <- dg %>% dyAxis("y", valueRange = c(nscr-buf, xscr+buf))
-
-      spc <- strrep(" ",50)
-      spcs <- ''
-      for (p in names(v$scrn)) {
-        dg <- dg %>% dyLimit(v$scrn[[p]], label=paste0(spcs,p), color = "grey22")
-        spcs = paste0(spcs,spc)
-      }
-    }
- 
-    return(dg)
+    v$df[v$df$RDNC %in% xs & v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]] & v$df$IID %in% iids,] %>%
+      dplyr::select(-one_of(c('RDTC','grp'))) %>%
+      mutate(RDNC = xr.NLong[RDNC]) %>%
+      group_by(IID,RDNC) %>%
+      dplyr::summarise(mean = mean(Val,na.rm=TRUE), 
+                       st.Dev = sd(Val,na.rm=TRUE), 
+                       p5 = quantile(Val,.05,na.rm=TRUE), 
+                       median = median(Val,na.rm=TRUE), 
+                       p95 = quantile(Val,.95,na.rm=TRUE), 
+                       n = sum(!is.na(Val)),
+                       .groups = "keep") %>%
+      ungroup() %>%
+      mutate_at(vars(-c(IID,RDNC,n)), funs(round(., 3))) %>%
+      formattable()
   }
 })
- 
+

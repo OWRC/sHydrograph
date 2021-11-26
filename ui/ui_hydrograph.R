@@ -6,6 +6,9 @@ navbarMenu("Hydrograph",
            tabPanel("Scatter plot",
                       source(file.path("ui/temporal", "ui_scatter.R"), local = TRUE)$value
            ),
+           tabPanel("Cumulative distribution function",
+                    source(file.path("ui/temporal", "ui_cdf.R"), local = TRUE)$value
+           ),
            tabPanel("Data download",
                       source(file.path("ui/temporal", "ui_data_table.R"), local = TRUE)$value
            )

@@ -5,25 +5,29 @@ observe({
   updateRadioButtons(session, "radio.se", choiceNames=x, choiceValues=x)
 })
 
-observe(updateDateRangeInput(session, "se.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
+# observe(updateDateRangeInput(session, "se.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
 observe({
   typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.se", choices = typs, selected = typs)
+  updateSelectInput(session,"int.se", choices = typs) #, selected = typs)
 })
 
 
 output$plt.se <- renderPlot({
   req(xl <- input$radio.se)
-  req(rng <- input$se.rng)
+  # req(rng <- input$se.rng)
   req(iid <- input$int.se)
   if (!is.null(v$df)){
     xs <- as.character(xr.Nshrt[xl])
     ylab <- xr.NLong[[xs]]
     
     # summarize by month
-    df <- v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]] & v$df$RDNC==xs & v$df$IID==iid,] %>%
-      mutate(month = month(Date))
+    # df <- v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]] & v$df$RDNC==xs & v$df$IID==iid,] %>%
+    df <- v$df[v$df$RDNC==xs & v$df$IID==iid,] %>%
+      drop_na(Val) %>%
+      mutate(year = year(Date), month = month(Date)) %>%
+      subset(year>min(year) & year<max(year))
+
     df$wy = wtr_yr(df$Date)
     df$se <- ''
     df[df$month<3 | df$month>11,]$se = 'DJF'

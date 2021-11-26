@@ -7,79 +7,27 @@ observe({
 
 observe({
   typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.ax", choices = typs, selected = typs)
+  updateSelectInput(session,"int.ax", choices = typs) #, selected = typs)
 })
 
-#########################################################################
-
-frequencyPlot <- function(series, years, ci, ylab=NULL, inverted=FALSE) {
-  
-  # determine plotting positions
-  if(inverted) {
-    bwpeaks <- data.frame(PROB = 1-pp(series, sort = FALSE), Val = series)
-    nep <- 1-ci$nonexceed_prob
-    lorg <- c(0, 0)
-    lpos <- c(.01, .01)    
-  } else {
-    bwpeaks <- data.frame(PROB = pp(series, sort = FALSE), Val = series)
-    nep <- ci$nonexceed_prob
-    lorg <- c(1, 0)
-    lpos <- c(.99, .01)    
-  }
-  bwpeaks$year = years
-  
-  xbreaks <- c(0.002,0.01,0.1,0.25,0.5,0.8,0.9,0.95,0.975,0.99,0.995,0.998)
-  rnge <- range(series, ci[,ncol(ci)], na.rm=TRUE)
-  # srng <- log10(rnge[2])-log10(rnge[2]-rnge[1]) # range index
-  # print(srng)
-  # ybreaks <- NULL
-  # if (log10(rnge[2])-log10(rnge[2]-rnge[1])<0.73) { # <1.7) {
-  #   log.range <- log10(rnge) #ci[,1]
-  #   lower <- 10^floor(log.range[1])
-  #   upper <- 10^ceiling(log.range[2])
-  #   cap <- lower
-  #   while(cap < upper) {
-  #     ybreaks <- c(ybreaks, seq(cap, cap*9, by = cap))
-  #     cap <- cap * 10
-  #   }    
-  # }
-  
-  # now plot
-  p <- ggplot(bwpeaks) + 
-    geom_point(aes(x=PROB, y=Val, colour=year)) + 
-    scale_colour_binned(type = "viridis") +
-    theme_bw() + theme(panel.grid.major = element_line(colour = "#808080"), 
-                       panel.grid.minor = element_line(colour = "#808080"),
-                       legend.justification = lorg, legend.position = lpos) +
-    scale_y_continuous(trans="log10", name=ylab) +
-    scale_x_continuous(trans=probability_trans(distribution="norm"),
-                       breaks=xbreaks, labels=signif(prob2T(xbreaks), digits=3),
-                       name="Return period (years)") +
-    geom_line(data=ci, aes(x=nep, y=true), color="red") +
-    geom_line(data=ci, aes(x=nep, y=lower), color="red", lty=2) +
-    geom_line(data=ci, aes(x=nep, y=upper), color="red", lty=2) + 
-    ggtitle(v$title)
-  
-  # if(!is.null(ybreaks)) {
-  #   p <- p + scale_y_continuous(trans="log10", name=ylab, breaks=ybreaks)
-  # } else {
-  #   p <- p + ylab(ylab)
-  # }
-  # if(!is.null(title)) p <- p + ggtitle(title)
-  
-  return(p)
-}
 
 
 ########################################################
 # frequency of annual extremes
 ########################################################
-extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=FALSE) {
+extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, mnx='max') {
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
-  if (ismn) {
+  ismn <- FALSE
+  if (mnx=='min') {
     agg <- aggregate(Val ~ yr, hds, min)
-  } else {
+    ismn=TRUE
+  } else if (mnx=='max') {
+    print(mnx)
     agg <- aggregate(Val ~ yr, hds, max) 
+  } else if (mnx=='mean') {
+    agg <- aggregate(Val ~ yr, hds, mean) 
+  } else{
+    agg <- aggregate(Val ~ yr, hds, median) 
   }
   input_data <- agg[,2]
   
@@ -88,6 +36,7 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=
                                                                          label = "WARNING: Annual extreme statistics requires the selected data to have measurements in at least 5 years")
     return(p)
   } else {
+    print(input_data)
     ci <- BootstrapCI(series=input_data, # input data
                       distribution=dist, # distribution
                       n.resamples = n,   # number of re-samples to conduct
@@ -98,16 +47,22 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, ismn=
   }
 }
 
-extreme_density <- function(hds, xlab, ismn=FALSE){
+extreme_density <- function(hds, xlab, mnx='max'){
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
-  if (ismn) {
+  if (mnx=='min') {
     df <- data.frame(peak=aggregate(Val ~ yr, hds, min)[,2])
-  } else {
-    df <- data.frame(peak=aggregate(Val ~ yr, hds, max)[,2]) 
+  } else if (mnx=='max') {
+    df <- data.frame(peak=aggregate(Val ~ yr, hds, max)[,2])
+  } else if (mnx=='mean') {
+    df <- data.frame(peak=aggregate(Val ~ yr, hds, mean)[,2])
+  } else{
+    df <- data.frame(peak=aggregate(Val ~ yr, hds, median)[,2]) 
   }
   
   p <- ggplot(df,aes(peak)) +
-    theme_bw() +
+    theme_bw() + theme(legend.justification = c(1, 1),legend.position = c(.99, .99), 
+                       legend.title = element_blank(),
+                       legend.background=element_rect(fill="transparent")) + 
     geom_density(colour='blue', size=1, fill='blue', alpha=0.2) +
     geom_rug() +
     labs(x=xlab, title=NULL)
@@ -115,22 +70,29 @@ extreme_density <- function(hds, xlab, ismn=FALSE){
   return(p)
 }
 
-extreme_histogram <- function(hds, ismn=FALSE){
+extreme_histogram <- function(hds, mnx='max'){
   hds$yr <- as.numeric(format(hds$Date, "%Y"))
   
-  if (ismn) {
+  if (mnx=='min') {
     df <- hds %>% 
       dplyr::select(c(Date,yr,Val)) %>%
       drop_na() %>%
       group_by(yr) %>% 
       summarise(v = min(Val,na.rm=TRUE), date = Date[which.min(Val)]) %>%
       ungroup()
-  } else {
+  } else if (mnx=='max') {
     df <- hds %>% 
       dplyr::select(c(Date,yr,Val)) %>%
       drop_na() %>%
       group_by(yr) %>% 
       summarise(v = max(Val,na.rm=TRUE), date = Date[which.max(Val)]) %>%
+      ungroup() 
+  } else {
+    df <- hds %>% 
+      dplyr::select(c(Date,yr,Val)) %>%
+      drop_na() %>%
+      group_by(yr) %>% 
+      summarise(v = median(Val,na.rm=TRUE), date = Date[which.quantile(Val,.5,na.rm=TRUE)]) %>%
       ungroup() 
   }
   
@@ -145,22 +107,27 @@ extreme_histogram <- function(hds, ismn=FALSE){
     labs(x='monthly distribution of annual extremes', title=NULL)
 }
 
-extreme_rank <- function(df,ylab,ismn='min'){
+extreme_rank <- function(df,iid,ylab, mnx='max'){
   df <- df %>% drop_na(Val) %>%
     mutate(year = year(Date)) %>%
     group_by(year) 
   
-  if (ismn=='min') {
-    df <- df %>% dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val)))
-    ttl <- paste0(v$title,'\nranked anomalies of extreme annual minima')
-  } else {
-    df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val)))
-    ttl <- paste0(v$title,'\nranked anomalies of extreme annual maxima')
+  if (mnx=='min') {
+    df <- df %>% dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
+    ttl <- paste0(iid,'\nranked anomalies of extreme annual minima')
+  } else if (mnx=='max') {
+    df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
+    ttl <- paste0(iid,'\nranked anomalies of extreme annual maxima')
+  } else if (mnx=='mean') {
+    df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
+    ttl <- paste0(iid,'\nranked anomalies of annual means')
+  } else{
+    df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
+    ttl <- paste0(iid,'\nranked anomalies of annual medians')
   }
   
   # Mann-Kendall test for trend
-  ts1 <- ts(df, start=min(df$year), end=max(df$year), frequency=1) 
-  MK = MannKendall(ts1)
+  MK = MannKendall(df$stat)
   if (MK$sl[1] < 0.001) {
     trnd <- paste0('Mann-Kendall tau: ',round(MK$tau[1],3),' (p < 0.001)')
   } else if (MK$sl[1] < 0.05) {
@@ -192,17 +159,17 @@ extreme_rank <- function(df,ylab,ismn='min'){
 output$ax.h <- renderPlot({
   req(xl <- input$radio.ax)
   req(iid <- input$int.ax)
-  input$ax.regen
+  req(mnx <- input$ax.mnmx)
+  req(mdl <- input$ax.freq)
+  # input$ax.regen
   isolate({
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\nfrequency of annual extremes')
-      ismn <- input$ax.mnmx=='min'
-      mdl <- input$ax.freq
-      nrsm <- input$ax.rsmpl
-      ci <- input$ax.ci
+      # nrsm <- input$ax.rsmpl
+      # ci <- input$ax.ci
       df <- remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]) %>% drop_na(Val)
-      withProgress(message = 'rendering plots..', value = 0.1, {extreme_frequency(df, xlab, mdl, nrsm, ci, ismn)})
+      withProgress(message = 'rendering plots..', value = 0.1, {extreme_frequency(df, xlab, dist=mdl, mnx=mnx) + ggtitle(iid)})
     }
   })
 })
@@ -210,12 +177,13 @@ output$ax.h <- renderPlot({
 output$ax.rnk <- renderPlot({
   req(xl <- input$radio.ax)
   req(iid <- input$int.ax)
-  input$ax.regen
+  req(mnx <- input$ax.mnmx)
+  # input$ax.regen
   withProgress(message = 'rendering rank..', value = 0.8, isolate(
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\nrank of annual extremes')
-      extreme_rank(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, input$ax.mnmx)
+      extreme_rank(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), iid, xlab, mnx=mnx)
     }
   ))
 })
@@ -223,13 +191,12 @@ output$ax.rnk <- renderPlot({
 output$ax.dist <- renderPlot({
   req(xl <- input$radio.ax)
   req(iid <- input$int.ax)
-  input$ax.regen
+  req(mnx <- input$ax.mnmx)
   isolate(
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
       xlab <- paste0(xr.NLong[[xs]],'\ndistribution of annual extremes')
-      ismn <- input$ax.mnmx=='min'
-      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, ismn)})
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, mnx=mnx)})
     }
   )
 })
@@ -237,12 +204,13 @@ output$ax.dist <- renderPlot({
 output$ax.hist <- renderPlot({
   req(iid <- input$int.ax)
   req(xl <- input$radio.ax)
-  input$ax.regen
+  req(mnx <- input$ax.mnmx)
+  # input$ax.regen
   isolate(
     if (!is.null(v$df)){
       xs <- as.character(xr.Nshrt[xl])
-      ismn <- input$ax.mnmx=='min'
-      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), ismn)})
+      # ismn <- input$ax.mnmx=='min'
+      withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), mnx=mnx)})
     }
   )
 })

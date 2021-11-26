@@ -6,11 +6,11 @@ observe({
   updateRadioButtons(session, "radio.an", choiceNames=x, choiceValues=x)
 })
 
-observe(updateDateRangeInput(session, "an.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
+# observe(updateDateRangeInput(session, "an.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
 observe({
   typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.an", choices = typs, selected = typs)
+  updateSelectInput(session,"int.an", choices = typs) #, selected = typs)
 })
 
 
@@ -27,7 +27,7 @@ summary_annual <- function(df,relative=FALSE){
   df1 <- df[df$RDNC==xs & df$IID==iid,] %>%
     drop_na(Val) %>%
     mutate(year = year(Date)) %>%
-    subset(year>min(year)) %>%
+    subset(year>min(year) & year<max(year)) %>%
     group_by(year)
 
   if ( xr.step[xs] ) {
@@ -63,15 +63,17 @@ summary_annual <- function(df,relative=FALSE){
 ### plots
 ######################
 output$plt.an.tot <- renderPlot({
-  req(rng <- input$an.rng)
-  if (!is.null(v$df)){
-    summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],])
-  }
+  if (!is.null(v$df)) summary_annual(v$df)
+  # req(rng <- input$an.rng)
+  # if (!is.null(v$df)){
+  #   summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],])
+  # }
 })
 
 output$plt.an.diff <- renderPlot({
-  req(rng <- input$an.rng)
-  if (!is.null(v$df)){
-    summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],],TRUE)
-  }
+  if (!is.null(v$df)) summary_annual(v$df,TRUE)
+  # req(rng <- input$an.rng)
+  # if (!is.null(v$df)){
+  #   summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],],TRUE)
+  # }
 })

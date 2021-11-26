@@ -7,7 +7,7 @@ observe({
 
 observe({
   typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.distr.m", choices = typs, selected = typs)
+  updateSelectInput(session,"int.distr.m", choices = typs) #, selected = typs)
 })
 
 

@@ -5,7 +5,7 @@ The annual extreme plotting presented above has been taken directly from peak fl
 
 Assumptions include:
 
-- Stationarity: no significant background signal has been changing over the long-term. *This will be violated under a changing climate, a changing pumping regime, etc.*
+- Stationarity: no significant background signal/trend has been changing over the long-term. *This will be violated under a changing climate, a changing pumping regime, etc.*
 - Independence: originally, this analysis is to be applied to event-based phenomenon (i.e., rainfall) where it is assumed that all events are independent of each other. *Groundwater monitoring is continuous and thus violates this assumption.*
 - the statistical characteristics of the sample represent those of the population.
 
@@ -15,4 +15,4 @@ Peak flow frequency curves were modified (with gratitude) from [headwateranalyti
 
 The method allows for the use of 5 distributions: Log-Pearson type 3 *(default)*, Weibull, Gumbel, Generalized Extreme Value (GEV), and the three-parameter lognormal models. (The user may change the distribution and refresh the plots.)
 
-By default, 90% confidence intervals are then plotted based in the bootstrap technique from 10,000 samples assuming a Log-Pearson III distribution.
+By default, 90% confidence intervals are then plotted based in the bootstrap technique from 25,000 samples assuming a Log-Pearson III distribution.

@@ -5,6 +5,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      dateRangeInput("dt.rng",label='Select date range:'),
       pickerInput(
         inputId = "pck.raw",
         label = "Choose interval:",
@@ -20,19 +21,27 @@ fluidPage(
       checkboxGroupInput("chkData", "Choose data type:", choices=NULL),
       hr(),
       checkboxInput("chkScrn", "show screen elevations", value=FALSE),   
-      hr(),
-      h4("Selected data range:"),
-      dateRangeInput("dt.rng",label=NULL), #,label='selected data range:'),
-      htmlOutput('info.main'), br(),
+      # hr(),
+      # h4("Selected data range:"),
+      # dateRangeInput("dt.rng",label=NULL), #,label='selected data range:'),
+      # htmlOutput('info.main'), 
+      br(),
       shiny::includeMarkdown("md/notes.md"),
       width = 2
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Raw view", br(), dygraphOutput("plt.raw")),
+                  tabPanel("Raw view", br(), 
+                           fluidRow(dygraphOutput("plt.raw")),
+                           br(), htmlOutput('info.main'),
+                           fluidRow(formattableOutput('tabsum'))
+                  ),
                   tabPanel("Faceted", br(),
-                           fluidRow(plotOutput("plt.print")), 
+                           fluidRow(plotOutput("plt.print", height = "600px")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))
+                  ),
+                  tabPanel("Map", br(),
+                           fluidRow(leafletOutput("main.map", height = "600px"))
                   ),
                   tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md"))
       ),

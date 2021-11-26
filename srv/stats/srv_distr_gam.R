@@ -7,12 +7,11 @@ observe({
 
 observe({
   typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.distr.gam", choices = typs, selected = typs)
+  updateSelectInput(session,"int.distr.gam", choices = typs) #, selected = typs)
 })
 
 
 applyGAM <- function(df,k,asPoints=FALSE){
-  
   
   p <- df %>%
     mutate(doy=as.numeric(strftime(Date, format="%j"))) %>%
@@ -20,7 +19,6 @@ applyGAM <- function(df,k,asPoints=FALSE){
     drop_na() %>% 
     GAM(k=k)
 
-  
   df <- df %>% 
     dplyr::select(c(Date,Val)) %>%
     drop_na() %>%        
@@ -33,14 +31,15 @@ applyGAM <- function(df,k,asPoints=FALSE){
   
   if (asPoints) {
     df[df==0] <- NA
-    p <- p + geom_point(data=df,aes(dateday,Val,group=year,color=year),size=1, position = "jitter")
+    p <- p + geom_point(data=df,aes(dateday,Val,group=year,color=year),size=1, position = "jitter", alpha=.1) +
+      theme(legend.position="none") # remove legend
   } else {
     p <- p + geom_line(data=df, aes(dateday,Val,group=year,color=year))
   }
   p + coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
 }
 
-gghighlow <- function(df1) {
+gghighlow <- function(df1,hide.legend=FALSE) {
   xl <- input$radio.distr.gam
   xs <- as.character(xr.Nshrt[xl])
   ylab <- paste0(xr.NLong[[xs]],'\npeak density')
@@ -61,7 +60,7 @@ gghighlow <- function(df1) {
   
   dfhl$value <- as.Date(dfhl$value, origin = "2016-01-01")
   
-  ggplot(dfhl, aes(value,fill=variable,colour=variable)) +
+  p <- ggplot(dfhl, aes(value,fill=variable,colour=variable)) +
     theme_bw() + 
     theme(text = element_text(size = 15),
           axis.ticks.length.x = unit(0.5, "cm"),
@@ -74,6 +73,16 @@ gghighlow <- function(df1) {
     scale_x_date(date_labels = "%b", date_minor_breaks = "1 month") +
     # scale_x_date(breaks = date_breaks("months"),labels = date_format("%b"),name=element_blank()) +
     coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
+  
+  if (hide.legend) {
+    # p <- p + theme(legend.position="none")
+    p <- p + theme(
+      legend.justification = c(1, 1),legend.position = c(.99, .99), 
+      legend.title = element_blank(),
+      legend.background=element_rect(fill="transparent")
+    )
+  }
+  return(p)
 }
 
 
@@ -89,7 +98,8 @@ output$distr.gam <- renderPlot({
         annotate("text", x = as.Date('2016-07-01'), y = 0, size=6, label = 'Not enough data, please select another parameter') + 
         theme_void() 
     } else {
-      plts <- list( applyGAM(df, k) + labs(title=iid,y=xl), gghighlow(df) )
+      pnts <- input$distr.gam.pnts
+      plts <- list( applyGAM(df, k, pnts) + labs(title=iid,y=xl), gghighlow(df, pnts) )
       cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
     }
   }

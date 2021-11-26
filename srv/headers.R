@@ -7,7 +7,9 @@ output$hdr.an <- renderUI({shiny::HTML("<h1>Annual summary</h1>")})
 
 output$hdr.se <- renderUI({shiny::HTML("<h1>Seasonal summary</h1>")})
 
-output$hdr.sc <- renderUI({shiny::HTML("<h1>Scatter plot</h1>")})
+output$hdr.sca <- renderUI({shiny::HTML("<h1>Scatter plot</h1>")})
+
+output$hdr.cdf <- renderUI({shiny::HTML("<h1>Cumulative Distribution Function</h1>")})
 
 # output$hdr.hl <- renderUI({shiny::HTML("<h1>High-Low recurrence</h1>")})
 
