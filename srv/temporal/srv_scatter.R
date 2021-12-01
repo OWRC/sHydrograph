@@ -18,7 +18,7 @@ observe({ updateDateRangeInput(session, "rng.sca", start = v$DTb, end = v$DTe, m
 
 observe({
   if (!is.null(v$df)) {
-    typs <- unique(v$df %>% arrange(RDNC,IID) %>% mutate(sel=paste0(IID,"-",RDNC)) %>% pull(sel))
+    typs <- unique(v$df %>% arrange(RDNC,IID) %>% mutate(sel=paste0(IID,"-",xr.NLong[RDNC])) %>% pull(sel))
     updateSelectInput(session,"cmbX.sca", choices = typs, selected = typs)
     updateSelectInput(session,"cmbY.sca", choices = typs, selected = typs)    
   }
@@ -28,7 +28,7 @@ observe({
 output$plt.sca <- renderPlot ({
   xsel <- input$cmbX.sca
   ysel <- input$cmbY.sca
-  df <- v$df %>% mutate(sel=paste0(IID,"-",RDNC))
+  df <- v$df %>% mutate(sel=paste0(IID,"-",xr.NLong[RDNC]))
   if (xsel==ysel) {
     p <- df[df$sel==xsel,] %>%
           spread(sel,Val) %>%
@@ -38,8 +38,8 @@ output$plt.sca <- renderPlot ({
                   legend.background=element_rect(fill="transparent")) +
             scale_color_binned(type = "viridis") + 
             geom_point(size=3) +
-            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
-            ggtitle(v$title)
+            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) #+
+            # ggtitle(v$title)
   } else {
     p <- df[df$sel==xsel | df$sel==ysel,] %>%
       # mutate(date=as.Date(SAMPLE_DATE), p2=paste0(PARAMETER," (",UNIT,")")) %>%
@@ -56,8 +56,8 @@ output$plt.sca <- renderPlot ({
               legend.background=element_rect(fill="transparent")) +
       scale_color_binned(type = "viridis") +       
       geom_point(size=3) +
-            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) +
-            ggtitle(v$title)
+            coord_cartesian(xlim = crng.sca$x, ylim = crng.sca$y, expand = FALSE) #+
+            # ggtitle(v$title)
   }
   if (input$chk.11.sca) {
     p + geom_abline(slope=1,intercept=0,linetype='dotted')
