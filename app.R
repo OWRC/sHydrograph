@@ -56,30 +56,30 @@ shinyApp(
     ### Load station ID:
     # Here are a few to try out: 1) Cannington OW99-2D (Int ID = -1261492764); 2) Aurora MW 1 (Int ID = -373572324); 
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
-    collect_interval(-847483645) #(283459923) #(730800020) #(40977) #(6994) #(148405,5) #(-2056054271,5) #(-224406311) #(-1261492764) #(-498465806) #(1697639961) #(1099646144) #(-373572324) #("test/-847483645.json") #(148842) #(83764) #(-1741125310,3) #
-    # collect_interval_loc(148720,3)
-    # observe({
-    #   query <- parseQueryString(session$clientData$url_search)
-    #   if ( !is.null(query$l) ) {
-    #     collect_interval_loc(strtoi(query$l),strtoi(query$t))
-    #   } else if ( !is.null(query$i) ) {
-    #     if ( is.na(as.numeric(query$i)) ) {
-    #       showNotification(paste0("Error: URL invalid."))
-    #     } else {
-    #       if ( !is.null(query$t) ) {
-    #         if ( is.na(as.numeric(query$t)) ) {
-    #           showNotification(paste0("Error: URL invalid."))
-    #         } else {
-    #           collect_interval(strtoi(query$i),strtoi(query$t))
-    #         }
-    #       } else {
-    #         collect_interval(strtoi(query$i))
-    #       }
-    #     }
-    #   } else {
-    #     showNotification(paste0("Error: URL invalid."))
-    #   }
-    # })
+    # collect_interval(-847483645) #(730800020) #() #(283459923) #(40977) #(6994) #(148405,5) #(-2056054271,5) #(-224406311) #(-1261492764) #(-498465806) #(1697639961) #(1099646144) #(-373572324) #("test/-847483645.json") #(148842) #(83764) #(-1741125310,3) #
+    # collect_interval_loc(-2087373503) #(148720,3) 8275
+    observe({
+      query <- parseQueryString(session$clientData$url_search)
+      if ( !is.null(query$l) ) {
+        collect_interval_loc(strtoi(query$l),strtoi(query$t))
+      } else if ( !is.null(query$i) ) {
+        if ( is.na(as.numeric(query$i)) ) {
+          showNotification(paste0("Error: URL invalid."))
+        } else {
+          if ( !is.null(query$t) ) {
+            if ( is.na(as.numeric(query$t)) ) {
+              showNotification(paste0("Error: URL invalid."))
+            } else {
+              collect_interval(strtoi(query$i),strtoi(query$t))
+            }
+          } else {
+            collect_interval(strtoi(query$i))
+          }
+        }
+      } else {
+        showNotification(paste0("Error: URL invalid."))
+      }
+    })
 
     source("srv/observables.R", local = TRUE)$value
     print(Sys.time() - old)
