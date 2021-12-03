@@ -61,7 +61,19 @@ shinyApp(
     observe({
       query <- parseQueryString(session$clientData$url_search)
       if ( !is.null(query$l) ) {
-        collect_interval_loc(strtoi(query$l),strtoi(query$t))
+        if ( is.na(as.numeric(query$l)) ) {
+          showNotification(paste0("Error: URL invalid."))
+        } else {
+          if ( !is.null(query$t) ) {
+            if ( is.na(as.numeric(query$t)) ) {
+              showNotification(paste0("Error: URL invalid."))
+            } else {
+              collect_interval_loc(strtoi(query$l),strtoi(query$t))
+            }
+          } else {
+            collect_interval_loc(strtoi(query$l))
+          }
+        }
       } else if ( !is.null(query$i) ) {
         if ( is.na(as.numeric(query$i)) ) {
           showNotification(paste0("Error: URL invalid."))
