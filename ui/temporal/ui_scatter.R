@@ -8,7 +8,7 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
-      dateRangeInput("rng.sca",label='Select date range:'),
+      # dateRangeInput("rng.sca",label='Select date range:'),
       selectInput("cmbX.sca", "Choose x-axis:", choices=NULL),
       selectInput("cmbY.sca", "Choose y-axis:", choices=NULL),
       checkboxInput("chk.11.sca", "add 1:1 line", value=FALSE), 

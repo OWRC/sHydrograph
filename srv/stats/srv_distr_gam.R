@@ -31,10 +31,10 @@ applyGAM <- function(df,k,asPoints=FALSE){
   
   if (asPoints) {
     df[df==0] <- NA
-    p <- p + geom_point(data=df,aes(dateday,Val,group=year,color=year),size=1, position = "jitter", alpha=.1) +
+    p <- p + geom_point(data=df,aes(dateday,Val,group=year,color=year),size=1, position = "jitter", alpha=.2) +
       theme(legend.position="none") # remove legend
   } else {
-    p <- p + geom_line(data=df, aes(dateday,Val,group=year,color=year))
+    p <- p + geom_path(data=df, aes(dateday,Val,group=year,color=year))
   }
   p + coord_cartesian(xlim=as.Date(c('2016-01-01','2016-12-31')))
 }

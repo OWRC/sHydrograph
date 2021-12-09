@@ -10,19 +10,37 @@
 
 observeEvent(input$plt.raw_date_window, { updated_date_window(input$plt.raw_date_window,"dt.rng") })
 
-observeEvent(input$dt.rng, { updated_date_selector(input$dt.rng) })
+observeEvent(input$dt.rng, { 
+  updated_date_selector(input$dt.rng) 
+  shinyjs::reset("raw.but.all")
+})
 
 observe({
   updateDateRangeInput(session, "dt.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe)
   r.rngselect = c(v$DTb, v$DTe)
 })
 
+observeEvent(input$raw.but.all, {
+  updateDateRangeInput(session, "dt.rng", start = v$DTb, end = v$DTe)
+  r.rngselect = c(v$DTb, v$DTe)
+})
+
+zoom.to.n.years <- function(ny) {
+  dtb <- v$DTe  - years(ny)
+  if (dtb < v$DTb) dtb <- v$DTb 
+  updateDateRangeInput(session, "dt.rng", start = dtb, end = v$DTe)
+  r.rngselect = c(dtb, v$DTe)
+}
+observeEvent(input$raw.but.1yr, { zoom.to.n.years(1) })
+observeEvent(input$raw.but.5yr, { zoom.to.n.years(5) })
+observeEvent(input$raw.but.10yr, { zoom.to.n.years(10) })
+
 observe({
   # x <- unname(unlist(v$typs))
   x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.raw,]$RDNC)])
   s <- x[x != "Temperature (Water) - Logger (°C)" & x != "AirPressure¹ (kPa)"] # default layers to uncheck
   # if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
-  updateCheckboxGroupInput(session, "chkData", choices=x, select=s) #tail(x,1))
+  updateCheckboxGroupInput(session, "chkData", choices=x, select=s) # tail(x,1))
   if (is.null(v$scrn)) hide("chkScrn")
 })
 

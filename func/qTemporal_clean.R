@@ -20,12 +20,14 @@ qTemporal_clean <- function(df) {
   if (!('RDTC' %in% colnames(df))) { df['RDTC'] <- NA } # value qualifyer
   if (!('IID' %in% colnames(df))) { df['IID'] <- NA } # value location id
 
-  # convert to dailies
-  df %>% 
-    mutate(Date = zoo::as.Date(Date)) %>%
-    group_by(Date, IID, RDNC, RDTC, unit) %>%
-    dplyr::summarise(Val = mean(Val)) %>% # grouping and summarizing needed to remove duplicate rows
-    ungroup()
+  return(df)
+  
+  # # convert to dailies
+  # df %>% 
+  #   mutate(Date = zoo::as.Date(Date)) %>%
+  #   group_by(Date, IID, RDNC, RDTC, unit) %>%
+  #   dplyr::summarise(Val = mean(Val)) %>% # grouping and summarizing needed to remove duplicate rows
+  #   ungroup()
   
   
   # df.plt <- df %>%

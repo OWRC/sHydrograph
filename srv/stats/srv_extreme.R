@@ -22,7 +22,6 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, mnx='
     agg <- aggregate(Val ~ yr, hds, min)
     ismn=TRUE
   } else if (mnx=='max') {
-    print(mnx)
     agg <- aggregate(Val ~ yr, hds, max) 
   } else if (mnx=='mean') {
     agg <- aggregate(Val ~ yr, hds, mean) 
@@ -36,14 +35,19 @@ extreme_frequency <- function(hds, xlab, dist='lp3', n = 2.5E4, ci = 0.90, mnx='
                                                                          label = "WARNING: Annual extreme statistics requires the selected data to have measurements in at least 5 years")
     return(p)
   } else {
-    print(input_data)
     ci <- BootstrapCI(series=input_data, # input data
                       distribution=dist, # distribution
                       n.resamples = n,   # number of re-samples to conduct
                       ci = ci)           # confidence interval level
     
-    # generate frequency plot
-    return(frequencyPlot(input_data, agg[,1], ci$ci, xlab, inverted=ismn))    
+    if (is.null(ci)) {
+      p <- ggplot() + theme_void() + xlim(0, 10) + ylim(0, 100) + annotate("text", x=1, y=85, hjust=0, size=6,
+                                                                           label = "data invalid for plotting, please select another")
+      return(p)      
+    } else {
+      # generate frequency plot
+      return(frequencyPlot(input_data, agg[,1], ci$ci, xlab, inverted=ismn))       
+    }
   }
 }
 

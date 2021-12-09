@@ -14,7 +14,7 @@ observeEvent(input$plt.sca_dblclick, {
   }
 })
 
-observe({ updateDateRangeInput(session, "rng.sca", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe) })
+# observe({ updateDateRangeInput(session, "rng.sca", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe) })
 
 observe({
   if (!is.null(v$df)) {

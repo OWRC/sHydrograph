@@ -64,6 +64,7 @@ output$plt.raw <- renderDygraph({
     cn <- colnames(qxts)
     dg <- dygraph(qxts)
     
+    # axis 'y2' paramters
     y2max = 150
     pp <- grep("Pump", cn, value = TRUE)
     if (length(pp) > 0) {
@@ -85,7 +86,7 @@ output$plt.raw <- renderDygraph({
              independentTicks = TRUE,
              drawGrid = FALSE,
              valueRange = c(y2max, 0)) %>%
-      dyRangeSelector(fillColor = '', strokeColor = '', height=20, dateWindow = rng, retainDateWindow = TRUE) %>%
+      dyRangeSelector(fillColor = '', strokeColor = '', height=20, dateWindow = rng) %>% #, retainDateWindow = TRUE) %>%
       dyOptions(axisLineWidth = 1.5, connectSeparatedPoints = TRUE)
     # dyLegend(show = "follow")
     

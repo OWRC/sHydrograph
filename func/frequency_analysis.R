@@ -28,7 +28,8 @@ FrequencyAnalysis <- function(series, distribution, nep = nonexceeds()) {
     
     # estimate distribution parameters
     distPar <- lmom2par(samLmom, type = distribution)
-    
+    if (is.null(distPar)) return(NULL)
+      
     # compute quantiles for nonexceedances
     quant <- par2qua(f = nep, para = distPar)
     
@@ -60,6 +61,7 @@ BootstrapCI <- function(series, distribution, n.resamples=1E3, nep=nonexceeds(),
 
   # compute frequency analysis
   fa <- FrequencyAnalysis(series=series, distribution=distribution, nep=nep)
+  if (is.null(fa)) return(fa)
   
   # extract fitted model parameters and flag as to whether the 
   # distribution is based on log transformed data

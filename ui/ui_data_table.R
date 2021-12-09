@@ -1,6 +1,7 @@
-tabPanel("Data table",
+
+tabPanel("Query Download", icon = icon("download"),
   sidebarPanel(
-   dateRangeInput("tab.rng", label = "Select date range:"),
+   # dateRangeInput("tab.rng", label = "Select date range:"),
    pickerInput(
      inputId = "pck.tab",
      label = "Choose interval:",
@@ -12,7 +13,8 @@ tabPanel("Data table",
      ),
      multiple = TRUE
    ),
-   radioButtons("tabRad", label = "Table format",
+   checkboxGroupInput("chk.tab", "Choose data type:", choices=NULL),
+   radioButtons("tab.spread", label = "Table format",
                 choices = list("original query (normalized)" = 1, "spread (re-organized)" = 2), 
                 selected = 1), br(),
    downloadButton("tabCsv", "Download csv.."), br(),

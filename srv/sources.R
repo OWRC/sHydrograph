@@ -1,6 +1,6 @@
 
 
-v <- reactiveValues(title=NULL,nam=NULL,meta=NULL,df=NULL,typs=NULL,scrn=NULL,DTb=NULL,DTe=NULL)
+v <- reactiveValues(title=NULL,nam=NULL,meta=NULL,df=NULL,raw=NULL,typs=NULL,scrn=NULL,DTb=NULL,DTe=NULL)
 
 
 source("srv/headers.R", local = TRUE)

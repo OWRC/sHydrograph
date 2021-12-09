@@ -28,9 +28,9 @@ collect_interval <- function(INT_ID,vTemporal=2) {
       v$nam <- paste0(v$meta$LOC_NAME[1], ": ", v$meta$INT_NAME[1])
       names(v$nam) <- INT_ID
       if (is.null(jsonfp)) {
-        v$df <- characterMap(qTemporal(INT_ID, vTemporal) %>% mutate(IID=INT_ID),v$nam)
+        qt <- qTemporal(INT_ID, vTemporal) %>% mutate(IID=INT_ID)
       } else {
-        v$df <- characterMap(qTemporal_json(jsonfp) %>% mutate(IID=INT_ID),v$nam)
+        qt <- qTemporal_json(jsonfp) %>% mutate(IID=INT_ID)
       }
       v$title <- v$nam[[1]]
     } else {
@@ -41,15 +41,22 @@ collect_interval <- function(INT_ID,vTemporal=2) {
       names(v$nam) <- nest
       if (is.null(jsonfp)) {
         qt <- qTemporal_nest(nest,vTemporal)
-        v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
-        v$df <- characterMap(qt,v$nam)
       } else {
         qt <- qTemporal_json(jsonfp)
-        v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
-        v$df <- characterMap(qt,v$nam)
       }
+      v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
       v$title <- paste(unname(unlist(v$nam)), collapse = '; ')  
     }   
+    
+    v$raw <- characterMap(qt %>% mutate(Date = as.POSIXct(Date, format="%Y-%m-%dT%H:%M:%OS")), v$nam)  #%>% mutate(Date = as.POSIXct(Date))
+    
+    # convert to daily
+    v$df <- characterMap(qt %>% 
+                           mutate(Date = zoo::as.Date(Date)) %>%
+                           group_by(Date, IID, RDNC, RDTC, unit) %>%
+                           dplyr::summarise(Val = mean(Val)) %>% # grouping and summarizing needed to remove duplicate rows
+                           ungroup(),
+                         v$nam)  
     
     v$DTb <- min(v$df$Date)
     v$DTe <- max(v$df$Date) 

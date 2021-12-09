@@ -5,7 +5,16 @@ fluidPage(
   ), hr(),
   fluidRow(
     sidebarPanel(
+      
       dateRangeInput("dt.rng",label='Select date range:'),
+      div(
+        style="display:inline-blockl; float:right",
+        actionButton("raw.but.1yr", "1yr"),
+        actionButton("raw.but.5yr", "5yr"),
+        actionButton("raw.but.10yr", "10yr"),
+        actionButton("raw.but.all", "all"),br(),br()
+      ),
+      
       pickerInput(
         inputId = "pck.raw",
         label = "Choose interval:",
@@ -31,19 +40,20 @@ fluidPage(
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Raw view", br(), 
-                           fluidRow(dygraphOutput("plt.raw")),
-                           br(), htmlOutput('info.main'),
-                           fluidRow(formattableOutput('tabsum'))
-                  ),
-                  tabPanel("Faceted", br(),
+                  tabPanel("Printable", br(),
                            fluidRow(plotOutput("plt.print", height = "600px")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))
+                  ),
+                  tabPanel("Quick viewer", br(), 
+                           fluidRow(shiny::includeMarkdown("md/rawview.md")),
+                           fluidRow(dygraphOutput("plt.raw")), 
+                           br(), htmlOutput('info.main'),
+                           fluidRow(formattableOutput('tabsum'))
                   ),
                   tabPanel("Map", br(),
                            fluidRow(leafletOutput("main.map", height = "600px"))
                   ),
-                  tabPanel("Disclaimer", shiny::includeMarkdown("md/disclaimer.md"))
+                  tabPanel("Please read", shiny::includeMarkdown("md/disclaimer.md"))
       ),
       width = 10
     )
