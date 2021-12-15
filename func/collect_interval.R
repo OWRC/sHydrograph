@@ -17,8 +17,9 @@ collect_interval <- function(INT_ID,vTemporal=2) {
   print(paste0(' -> INT_ID: ', INT_ID))
   isolate(withProgress(message = 'querying station data..', value = 0.1, {
     v$meta <- qIntInfo(INT_ID) #%>%
-      # dplyr::select(c(LOC_ID,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
+      # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
     if (is.null(v$meta)) showNotification(paste0("Error: Interval ID not valid"))
+    print(v$meta)
     v$scrn <- qIntScreen(INT_ID)
 
     nest <- qNest(INT_ID)
@@ -36,7 +37,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     } else {
       showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
       v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") %>%
-        dplyr::select(c(LOC_ID,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
+        dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
       v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
       names(v$nam) <- nest
       if (is.null(jsonfp)) {
