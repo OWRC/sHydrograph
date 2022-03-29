@@ -26,6 +26,7 @@ library(fs)
 library(MASS)
 library(Kendall)
 require(curl)
+library(stringr)
 
 
 source("pkg/js.R", local = TRUE)

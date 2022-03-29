@@ -9,7 +9,7 @@ collect_interval_loc <- function(LOC_ID,vTemporal=2) {
 
 collect_interval <- function(INT_ID,vTemporal=2) {
   jsonfp <- NULL
-  if ( !is.numeric(INT_ID)) {
+  if ( !is.numeric(INT_ID) & substr(INT_ID,1,1) != "[" ) {
     jsonfp <- INT_ID # assuming a .json file for testing
     INT_ID <- strtoi(sub(pattern = "(.*)\\..*$", replacement = "\\1", basename(jsonfp))) # filename no extension
   }
@@ -18,22 +18,36 @@ collect_interval <- function(INT_ID,vTemporal=2) {
   isolate(withProgress(message = 'querying station data..', value = 0.1, {
     v$meta <- qIntInfo(INT_ID) #%>%
       # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
-    if (is.null(v$meta)) showNotification(paste0("Error: Interval ID not valid"))
-    print(v$meta)
+    if (is.null(v$meta)) showNotification(paste0("Error (meta): Interval ID not valid"))
+    # print(v$meta)
     v$scrn <- qIntScreen(INT_ID)
 
     nest <- qNest(INT_ID)
     setProgress(0.5,"querying observations..")
     if (length(nest) <= 1) {
-      # if (length(v$meta$INT_NAME_ALT1[1])>0) v$nam <- paste0(v$meta$INT_NAME[1], ": ", v$meta$INT_NAME_ALT1[1]) else v$nam <- v$meta$INT_NAME[1]
-      v$nam <- paste0(v$meta$LOC_NAME[1], ": ", v$meta$INT_NAME[1])
-      names(v$nam) <- INT_ID
-      if (is.null(jsonfp)) {
-        qt <- qTemporal(INT_ID, vTemporal) %>% mutate(IID=INT_ID)
+
+            if (is.null(jsonfp)) {
+        qt <- qTemporal(INT_ID, vTemporal) #%>% mutate(IID=INT_ID)
       } else {
-        qt <- qTemporal_json(jsonfp) %>% mutate(IID=INT_ID)
+        qt <- qTemporal_json(jsonfp) #%>% mutate(IID=INT_ID)
       }
-      v$title <- v$nam[[1]]
+      if (is.numeric(INT_ID)) {
+        # if (length(v$meta$INT_NAME_ALT1[1])>0) v$nam <- paste0(v$meta$INT_NAME[1], ": ", v$meta$INT_NAME_ALT1[1]) else v$nam <- v$meta$INT_NAME[1]
+        v$nam <- paste0(v$meta$LOC_NAME[1], ": ", v$meta$INT_NAME[1])
+        qt <- qt %>% mutate(IID=INT_ID)
+        names(v$nam) <- INT_ID
+        v$title <- v$nam[[1]]
+      } else {
+        v$nam <- paste0(v$meta$LOC_NAME, ": ", v$meta$INT_NAME)
+        
+        
+ 
+        names(v$nam) <- scan(text = str_sub(INT_ID,2,-2), sep = ",")
+        
+        v$title <- paste(v$nam, collapse = "; ")
+      }
+      print(v$title)
+      print(v$nam)
     } else {
       showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
       v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") %>%
