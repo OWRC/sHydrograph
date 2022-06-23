@@ -14,7 +14,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     INT_ID <- strtoi(sub(pattern = "(.*)\\..*$", replacement = "\\1", basename(jsonfp))) # filename no extension
   }
   
-  print(paste0(' -> INT_ID: ', INT_ID))
+  print(paste0('INT_ID: ', INT_ID))
   isolate(withProgress(message = 'querying station data..', value = 0.1, {
     v$meta <- qIntInfo(INT_ID) #%>%
       # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
@@ -25,8 +25,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     nest <- qNest(INT_ID)
     setProgress(0.5,"querying observations..")
     if (length(nest) <= 1) {
-
-            if (is.null(jsonfp)) {
+      if (is.null(jsonfp)) {
         qt <- qTemporal(INT_ID, vTemporal) #%>% mutate(IID=INT_ID)
       } else {
         qt <- qTemporal_json(jsonfp) #%>% mutate(IID=INT_ID)
@@ -39,15 +38,10 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         v$title <- v$nam[[1]]
       } else {
         v$nam <- paste0(v$meta$LOC_NAME, ": ", v$meta$INT_NAME)
-        
-        
- 
         names(v$nam) <- scan(text = str_sub(INT_ID,2,-2), sep = ",")
-        
         v$title <- paste(v$nam, collapse = "; ")
       }
       print(v$title)
-      print(v$nam)
     } else {
       showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
       v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") # %>%
@@ -63,6 +57,8 @@ collect_interval <- function(INT_ID,vTemporal=2) {
       v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
       v$title <- paste(unname(unlist(v$nam)), collapse = '; ')  
     }   
+    
+    print(paste0("available RDNC: ", paste(unique(qt$RDNC),collapse="; ")))
     
     v$raw <- characterMap(qt %>% mutate(Date = as.POSIXct(Date, format="%Y-%m-%dT%H:%M:%OS")), v$nam)  #%>% mutate(Date = as.POSIXct(Date))
     

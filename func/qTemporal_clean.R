@@ -5,16 +5,16 @@ qTemporal_clean <- function(df) {
 
   # remove unwanted intervals
   df <- df[!(df$RDNC %in% xr.Ignore),]
-
-  # special case, remove initial values made long before monitoring occurred (YCDB fix)
+  
+  # ### special case: remove initial values made long before monitoring occurred (YCDB fix)
   if ( nrow(df) > 10 ) {
     for(i in 1:10) {
-      if  ( as.numeric(difftime(df[i+1,"Date"], df[i,"Date"], unit="days"))/365.24 > 1.5 ) { 
-        df = df[-(1:i),] 
+      if  ( as.numeric(difftime(df[i+1,"Date"], df[i,"Date"], unit="days"))/365.24 > 1.5 ) {
+        df = df[-(1:i),]
         break
-      }        
+      }
     }
-  }   
+  }
   
   # include required fields
   if (!('RDTC' %in% colnames(df))) { df['RDTC'] <- NA } # value qualifyer

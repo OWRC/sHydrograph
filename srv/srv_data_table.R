@@ -115,8 +115,8 @@ output$tabiids <- renderDataTable(
 output$tabts <- renderDataTable(
   { if (!is.null(v$raw)) df.filtered() }, 
   options = list(scrollY='100%', scrollX=TRUE,
-                 lengthMenu = c(30, 100, 365, 3652),
-                 pageLength = 100,
+                 lengthMenu = c(5, 30, 100, 365, 3652),
+                 pageLength = 30,
                  searching=FALSE)
 )
 
