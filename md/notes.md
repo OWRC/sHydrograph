@@ -1,1 +1,1 @@
-¹ values are interpolations from nearby meteorological stations
+¹ values are [interpolated from nearby meteorological stations](https://owrc.github.io/interpolants/modelling/waterbudget/data.html)

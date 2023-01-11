@@ -2,7 +2,10 @@
 
 
 qTemporal_clean <- function(df) {
-
+  
+  # remove null dates
+  df <- df[!(is.na(df$Date)),]
+  
   # remove unwanted intervals
   df <- df[!(df$RDNC %in% xr.Ignore),]
   

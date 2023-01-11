@@ -38,7 +38,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         v$title <- v$nam[[1]]
       } else {
         v$nam <- paste0(v$meta$LOC_NAME, ": ", v$meta$INT_NAME)
-        names(v$nam) <- scan(text = str_sub(INT_ID,2,-2), sep = ",")
+        names(v$nam) <- v$meta$INT_ID #scan(text = str_sub(IIDs,2,-2), sep = ",")
         v$title <- paste(v$nam, collapse = "; ")
       }
       print(v$title)
@@ -89,12 +89,16 @@ collect_interval <- function(INT_ID,vTemporal=2) {
                   grp = xr.group[RDNC],
                   RDNC = xr.RDNC[RDNC] )
         
+        # print(nrow(v$raw))
+        # print(head(v$raw, 3))
         # print(head(v$df, 3))
         # print(head(dfInterp, 3))
         v$df <- rbind(v$df, dfInterp) #%>% arrange(Date)
+        # v$raw <- rbind(v$raw, dfInterp)
+        # print(nrow(v$raw))
       }      
     }
-    print(head(v$df, 3)) 
+    # print(head(v$df, 3)) 
     v$typs <- xr.NLong[unique(v$df$RDNC)]
   }))
   shinyjs::hide(id = "loading-content", anim = TRUE, animType = "fade")

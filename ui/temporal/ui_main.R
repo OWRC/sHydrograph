@@ -1,7 +1,8 @@
 fluidPage(
   title = 'sHydrograph',
   fluidRow(
-    htmlOutput("hdr.raw")
+    htmlOutput("hdr.raw"),
+    h3('daily-aggregated data shown')
   ), hr(),
   fluidRow(
     sidebarPanel(

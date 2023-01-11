@@ -1,7 +1,7 @@
 
 tabPanel("Query Download", icon = icon("download"),
   sidebarPanel(
-   # dateRangeInput("tab.rng", label = "Select date range:"),
+   dateRangeInput("tab.rng", label = "Select date range:"),
    pickerInput(
      inputId = "pck.tab",
      label = "Choose interval:",
@@ -15,9 +15,13 @@ tabPanel("Query Download", icon = icon("download"),
    ),
    checkboxGroupInput("chk.tab", "Choose data type:", choices=NULL),
    radioButtons("tab.spread", label = "Table format",
-                choices = list("original query (normalized)" = 1, "spread (re-organized)" = 2), 
-                selected = 1), br(),
-   downloadButton("tabCsv", "Download csv.."), br(),
+                choices = list("raw original DB query (normalized)" = 1, 
+                               "spread (column-wise organization)" = 2, 
+                               "spread, daily-aggregated data only (includes interpolated climate)" = 3), 
+                selected = 1), 
+   br(),
+   h5('Download table as shown'),
+   downloadButton("tabCsv", "Download csv.."), br(), br(),
    shiny::includeMarkdown("md/notes.md"),
    width=2
   ),
