@@ -1,16 +1,15 @@
 
 
 observe({
-  req(i <- input$int.an)
-  x <- unname(xr.NLong[unique(v$df[v$df$IID==i,]$RDNC)])
-  updateRadioButtons(session, "radio.an", choiceNames=x, choiceValues=x)
+  x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.an,]$RDNC)])
+  updateCheckboxGroupInput(session, "chk.an", choices=x, select=x)
 })
 
 # observe(updateDateRangeInput(session, "an.rng", start = v$DTb, end = v$DTe, min = v$DTb, max = v$DTe))
 
 observe({
-  typs <- unique(v$df$IID)
-  updateSelectInput(session,"int.an", choices = typs) #, selected = typs)
+  x <- unique(v$df$IID)
+  updatePickerInput(session,"pck.an", choices = x, selected = x)
 })
 
 
@@ -18,44 +17,45 @@ observe({
 # annual time series summary
 ########################################################
 summary_annual <- function(df,relative=FALSE){
-  iid <- input$int.an
-  xl <- input$radio.an
+  req(xl <- input$chk.an)
+  req(iids <- input$pck.an)
   xs <- as.character(xr.Nshrt[xl])
-  ylab <- xr.NLong[[xs]]
-  
+
   # summarize by year
-  df1 <- df[df$RDNC==xs & df$IID==iid,] %>%
+  df1 <- df[df$RDNC %in% xs & df$IID %in% iids,] %>%
     drop_na(Val) %>%
     mutate(year = year(Date)) %>%
-    subset(year>min(year) & year<max(year)) %>%
-    group_by(year)
+    subset(year>min(year) & year<max(year))
+  
+  df1$m1 <- xr.step[df1$RDNC]
 
-  if ( xr.step[xs] ) {
-    df1 <- df1 %>% dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val)))
-  } else {
-    df1 <- df1 %>% dplyr::summarise(stat = mean(Val, na.rm = TRUE), n = sum(!is.na(Val)))
-  }
+  df1 <- df1 %>%
+    group_by(IID,grp,RDNC,m1,year) %>% 
+    dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>%
+    # mutate(m1 = recode(RDNC, !!!xr.step, .default = NA)) %>%
+    mutate(stat = case_when(!m1 ~ stat/n, TRUE ~ stat))
+
 
   if (nrow(df1[df1$n==0,])>0) df1[df1$n==0,]$stat <- NA
-  mP <- mean(df1$stat, na.rm=TRUE)
+  df1 <- df1 %>% mutate(statmean = mean(stat, na.rm=TRUE))
 
   if(!relative){
-    p <- ggplot(df1, aes(year,stat)) +
-      theme_bw() +
+    p <- ggplot(df1, aes(year,stat, color=IID, linetype=RDNC)) +
+      theme_bw() + theme(legend.position="bottom", legend.title= element_blank()) +
       geom_step(direction = "mid") +
-      geom_hline(yintercept = mP, size=1, linetype='dotted') +
-      geom_label(aes(x = min(year), y=mP, label=paste0("mean ",ylab," = ",round(mP,0))), hjust=0,vjust=-.5,fill = "white") +
-      labs(y = ylab, x=NULL)
+      # geom_hline(yintercept = statmean, size=1, linetype='dotted') +
+      # geom_label(aes(x = min(year), y=statmean, label=paste0("mean ",ylab," = ",round(1,0))), hjust=0,vjust=-.5,fill = "white") +
+      labs(y = NULL, x=NULL)
   }else{
-    df1$stat <- df1$stat - mP
-    p <- ggplot(df1, aes(year,stat)) +
-      theme_bw() +
+    df1$diff <- df1$stat - df1$statmean
+    p <- ggplot(df1, aes(year,diff, color=IID, fill=RDNC)) +
+      theme_bw() + theme(legend.position="bottom", legend.title= element_blank()) +
       theme(axis.text.x=element_text(angle=90,vjust=0),axis.title.x=element_blank()) +
-      geom_bar(stat="identity") +
+      geom_bar(stat="identity", position = "dodge", alpha=.25) +
       geom_smooth(na.rm=TRUE) +
-      labs(y = paste0("Relative ", ylab), x=NULL)
+      labs(y = NULL, x=NULL)
   }
-  return(p + ggtitle(iid))
+  return(p + ggtitle(iids) + facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left"))
 }
 
 

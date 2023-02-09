@@ -7,8 +7,18 @@ fluidPage(
   fluidRow(
     sidebarPanel(
       # dateRangeInput("an.rng", label = "Choose date range"),
-      selectInput("int.an", "Choose interval:", choices=NULL),
-      radioButtons("radio.an", "Choose data type:",choices=c("dummy")), br(),
+      pickerInput(
+        inputId = "pck.an",
+        label = "Choose interval:",
+        choices = NULL,
+        options = list(
+          `actions-box` = TRUE,
+          size = 10,
+          `selected-text-format` = "count > 3"
+        ),
+        multiple = TRUE
+      ),
+      checkboxGroupInput("chk.an", "Choose data type:", choices=NULL), br(),
       shiny::includeMarkdown("md/notes.md"),
       width=3
     ),

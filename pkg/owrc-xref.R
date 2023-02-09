@@ -92,7 +92,7 @@ xr.step <- c(
   "iAirPressure"=FALSE,
   "PackDepth"=TRUE,
   # "AtmosYld"=TRUE,
-  "StrmFlw"=TRUE
+  "StrmFlw"=FALSE
 )
 
 
