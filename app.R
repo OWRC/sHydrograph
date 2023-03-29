@@ -5,8 +5,8 @@
 # general hydrograph tool
 #
 # By M. Marchildon
-# v.1.2.4
-# Feb. 2023
+# v.1.2.5
+# Mar. 2023
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
@@ -36,7 +36,7 @@ shinyApp(
         list(tags$head(HTML('<link rel="icon", href="favicon.png",type="image/png"/>'))),
         div(style="padding: 1px 0px; height: 0px", titlePanel(title="", windowTitle="sHydrograph")),
         navbarPage(
-          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.4"),
+          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.5"),
           source(file.path("ui", "ui_hydrograph.R"), local = TRUE)$value,
           source(file.path("ui", "ui_trends.R"), local = TRUE)$value,
           source(file.path("ui", "ui_stats.R"), local = TRUE)$value,
@@ -60,7 +60,7 @@ shinyApp(
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
     # collect_interval("[120000374,120000373,120000372]") #(120000006) #(1003537998) #(730800020) #(360000475) #(-1741125310,3) #(83764) #(148842) #("test/-847483645.json") #(-373572324) #(1099646144) #(1697639961) #(-498465806) #(-1261492764) #(-224406311) #(-2056054271,5) #(148405,5) #(283459923) #(6994) #(-847483645) #(40977)
     # collect_interval_loc(131393) #(148720,3) #(-2087373503) # 8275
-    # collect_interval("[120000006,1003537998,730800020,360000475") #(148405,5) #(148014,3) #(730800020) #("[148014,360000026]",3) #
+    # collect_interval(1000001785) #(730800020) #("[120000006,1003537998,730800020,360000475") #(148405,5) #(148014,3) #("[148014,360000026]",3) #
     observe({
       query <- parseQueryString(session$clientData$url_search)
       if ( !is.null(query$l) ) {

@@ -104,6 +104,9 @@ output$plt.raw <- renderDygraph({
         spcs = paste0(spcs,spc)
       }
     }
+    if ( !is.null(v$v0) && input$chkWL0 ) {
+      dg <- dg %>% dyLimit(v$v0, label='Original Water level', color = "blue")
+    }
     
     return(dg)
   }

@@ -31,7 +31,8 @@ fluidPage(
       # selectInput("cmbData", "Choose data type:", choices=NULL),
       checkboxGroupInput("chkData", "Choose data type:", choices=NULL),
       hr(),
-      checkboxInput("chkScrn", "show screen elevations", value=FALSE),   
+      checkboxInput("chkScrn", "show screen/ground elevations", value=FALSE),
+      checkboxInput("chkWL0", "show original static water level", value=FALSE),
       # hr(),
       # h4("Selected data range:"),
       # dateRangeInput("dt.rng",label=NULL), #,label='selected data range:'),
@@ -42,15 +43,15 @@ fluidPage(
     ),
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Printable", br(),
-                           fluidRow(plotOutput("plt.print", height = "600px")), 
-                           fluidRow(shiny::includeMarkdown("md/rightclick.md"))
-                  ),
                   tabPanel("Quick viewer", br(), 
                            fluidRow(shiny::includeMarkdown("md/rawview.md")),
                            fluidRow(dygraphOutput("plt.raw")), 
                            br(), htmlOutput('info.main'),
                            fluidRow(formattableOutput('tabsum'))
+                  ),
+                  tabPanel("Printable", br(),
+                           fluidRow(plotOutput("plt.print", height = "600px")), 
+                           fluidRow(shiny::includeMarkdown("md/rightclick.md"))
                   ),
                   tabPanel("Map", br(),
                            fluidRow(leafletOutput("main.map", height = "600px"))
