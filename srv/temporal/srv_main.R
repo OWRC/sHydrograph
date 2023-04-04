@@ -8,6 +8,16 @@
 #   })
 # })
 
+observe({
+  if ( input$tab.main=='dyg' ) {
+    shinyjs::enable("chkScrn")
+    shinyjs::enable("chkWL0")
+  } else {
+    shinyjs::disable("chkScrn")
+    shinyjs::disable("chkWL0")
+  }
+})
+
 observeEvent(input$plt.raw_date_window, { updated_date_window(input$plt.raw_date_window,"dt.rng") })
 
 observeEvent(input$dt.rng, { 

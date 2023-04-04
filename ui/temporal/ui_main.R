@@ -42,21 +42,22 @@ fluidPage(
       width = 2
     ),
     mainPanel(
-      tabsetPanel(type = "tabs",
-                  tabPanel("Quick viewer", br(), 
+      tabsetPanel(type = "tabs", id= "tab.main",
+                  tabPanel("Quick viewer", value='dyg', br(), 
                            fluidRow(shiny::includeMarkdown("md/rawview.md")),
+                           textOutput("plt.raw.labelsDiv"),
                            fluidRow(dygraphOutput("plt.raw")), 
                            br(), htmlOutput('info.main'),
                            fluidRow(formattableOutput('tabsum'))
                   ),
-                  tabPanel("Printable", br(),
+                  tabPanel("Printable", value='gg', br(),
                            fluidRow(plotOutput("plt.print", height = "600px")), 
                            fluidRow(shiny::includeMarkdown("md/rightclick.md"))
                   ),
-                  tabPanel("Map", br(),
+                  tabPanel("Map", value='leaf', br(),
                            fluidRow(leafletOutput("main.map", height = "600px"))
                   ),
-                  tabPanel("Please read", shiny::includeMarkdown("md/disclaimer.md"))
+                  tabPanel("Please read", value='dsc', shiny::includeMarkdown("md/disclaimer.md"))
       ),
       width = 10
     )

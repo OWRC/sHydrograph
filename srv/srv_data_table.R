@@ -65,7 +65,7 @@ df.filtered <- reactive({
       return(sdf)
     # }
   } else if (s == 3) { # spread daily table
-    sdf <- v$df[v$df$RDNC %in% xs & v$df$IID %in% c(iids, 'interpolated'),] %>%
+    sdf <- v$df[v$df$RDNC %in% xs & v$df$IID %in% c(iids, 'interpolated climate'),] %>%
       mutate(RDNC = xr.NLong[as.character(RDNC)]) %>%
       dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
       group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)

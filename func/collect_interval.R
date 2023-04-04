@@ -59,6 +59,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     }   
     
     v$v0 <- qt[1,"Val"] # first value
+    v$t0 <- qt[1,"Date"]
     
     print(paste0("available RDNC: ", paste(unique(qt$RDNC),collapse="; ")))
     
@@ -95,7 +96,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
           mutate(Pa=Pa/1000) %>%
           gather(RDNC,Val,-Date) %>%
           drop_na() %>%
-          mutate( IID = "interpolated", #v$nam[as.character(INT_ID)],
+          mutate( IID = "interpolated climate", #v$nam[as.character(INT_ID)],
                   unit = xr.unit[RDNC],
                   RDTC = "interpolated",
                   grp = xr.group[RDNC],

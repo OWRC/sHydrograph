@@ -35,6 +35,7 @@ qxts_series <- reactive({
     }
   }
   
+  
   # reintroduce climate
   if (is.null(sdf) & is.null(mdf)) {
     return(NULL)
@@ -43,7 +44,7 @@ qxts_series <- reactive({
   } else if (is.null(sdf)) {
     xts(mdf, order.by = mdf$Date)
   } else {
-    sdf <- sdf %>% inner_join(mdf)
+    sdf <- sdf %>% left_join(mdf)
     xts(sdf, order.by = sdf$Date)
   }
 })
@@ -62,9 +63,10 @@ output$plt.raw <- renderDygraph({
     xs <- as.character(xr.Nshrt[xl])
     qxts <- qxts_series()
     cn <- colnames(qxts)
-    dg <- dygraph(qxts)
+    dg <- dygraph(qxts) %>% dyLegend(labelsDiv = "plt.raw.labelsDiv")
     
-    # axis 'y2' paramters
+    
+    # axis 'y2' parameters
     y2max = 150
     pp <- grep("Pump", cn, value = TRUE)
     if (length(pp) > 0) {
@@ -105,7 +107,7 @@ output$plt.raw <- renderDygraph({
       }
     }
     if ( !is.null(v$v0) && input$chkWL0 ) {
-      dg <- dg %>% dyLimit(v$v0, label='Original Water level', color = "blue")
+      dg <- dg %>% dyLimit(v$v0, label=paste0('Original Water level (',format(as.POSIXct(v$t0),'%Y-%m-%d'),')'), color = "blue")
     }
     
     return(dg)
