@@ -30,6 +30,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
       } else {
         qt <- qTemporal_json(jsonfp) #%>% mutate(IID=INT_ID)
       }
+ 
       if (is.numeric(INT_ID)) {
         # if (length(v$meta$INT_NAME_ALT1[1])>0) v$nam <- paste0(v$meta$INT_NAME[1], ": ", v$meta$INT_NAME_ALT1[1]) else v$nam <- v$meta$INT_NAME[1]
         v$nam <- paste0(v$meta$LOC_NAME[1], ": ", v$meta$INT_NAME[1])
@@ -72,9 +73,9 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         }
       }
     }
-    
+
     v$raw <- characterMap(qt %>% mutate(Date = as.POSIXct(Date, format="%Y-%m-%dT%H:%M:%OS")), v$nam)  #%>% mutate(Date = as.POSIXct(Date))
-    
+
     # convert to daily
     v$df <- characterMap(qt %>% 
                            mutate(Date = zoo::as.Date(Date)) %>%
