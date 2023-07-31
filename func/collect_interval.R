@@ -64,15 +64,15 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     
     print(paste0("available RDNC: ", paste(unique(qt$RDNC),collapse="; ")))
     
-    ### special case: remove initial values made long before monitoring occurred (YCDB fix)
-    if ( nrow(qt) > 10 ) {
-      for(i in 1:10) {
-        if  ( as.numeric(difftime(qt[i+1,"Date"], qt[i,"Date"], unit="days"))/365.24 > 1.5 ) {
-          qt = qt[-(1:i),]
-          break
-        }
-      }
-    }
+    # ### special case: remove initial values made long before monitoring occurred (YCDB fix)
+    # if ( nrow(qt) > 10 ) {
+    #   for(i in 1:10) {
+    #     if  ( as.numeric(difftime(qt[i+1,"Date"], qt[i,"Date"], unit="days"))/365.24 > 1.5 ) {
+    #       qt = qt[-(1:i),]
+    #       break
+    #     }
+    #   }
+    # }
 
     v$raw <- characterMap(qt %>% mutate(Date = as.POSIXct(Date, format="%Y-%m-%dT%H:%M:%OS")), v$nam)  #%>% mutate(Date = as.POSIXct(Date))
 
