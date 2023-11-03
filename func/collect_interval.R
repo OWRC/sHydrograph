@@ -13,7 +13,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     jsonfp <- INT_ID # assuming a .json file for testing
     INT_ID <- strtoi(sub(pattern = "(.*)\\..*$", replacement = "\\1", basename(jsonfp))) # filename no extension
   }
-  
+     
   print(paste0('INT_ID: ', INT_ID))
   isolate(withProgress(message = 'querying station data..', value = 0.1, {
     v$meta <- qIntInfo(INT_ID) #%>%
@@ -24,6 +24,27 @@ collect_interval <- function(INT_ID,vTemporal=2) {
 
     nest <- qNest(INT_ID)
     setProgress(0.5,"querying observations..")
+    if ( length(nest) > 1 ) {
+      showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
+      v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") # %>%
+      # # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
+      # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
+      v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
+      names(v$nam) <- nest
+      if (is.null(jsonfp)) {
+        qt <- qTemporal_nest(nest,vTemporal)
+      } else {
+        qt <- qTemporal_json(jsonfp)
+      }
+      if (is.null(qt)) {
+        showNotification("interval nest too large, querying selected location only")
+        nest <- c(INT_ID)
+      } else {
+        v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
+        v$title <- paste(unname(unlist(v$nam)), collapse = '; ')          
+      }
+    }
+    
     if (length(nest) <= 1) {
       if (is.null(jsonfp)) {
         qt <- qTemporal(INT_ID, vTemporal) #%>% mutate(IID=INT_ID)
@@ -43,20 +64,6 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         v$title <- paste(v$nam, collapse = "; ")
       }
       print(v$title)
-    } else {
-      showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
-      v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") # %>%
-        # # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
-        # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
-      v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
-      names(v$nam) <- nest
-      if (is.null(jsonfp)) {
-        qt <- qTemporal_nest(nest,vTemporal)
-      } else {
-        qt <- qTemporal_json(jsonfp)
-      }
-      v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
-      v$title <- paste(unname(unlist(v$nam)), collapse = '; ')  
     }   
     
     v$v0 <- qt[1,"Val"] # first value
