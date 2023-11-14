@@ -19,22 +19,40 @@ observe({
 summary_annual <- function(df,relative=FALSE){
   req(xl <- input$chk.an)
   req(iids <- input$pck.an)
+  req(typ <- input$sel.an)
   xs <- as.character(xr.Nshrt[xl])
 
   # summarize by year
   df1 <- df[df$RDNC %in% xs & df$IID %in% iids,] %>%
     drop_na(Val) %>%
     mutate(year = year(Date)) %>%
-    subset(year>min(year) & year<max(year))
+    subset(year>min(year) & year<max(year)) # cropping first and last years
   
   df1$m1 <- xr.step[df1$RDNC]
 
-  df1 <- df1 %>%
-    group_by(IID,grp,RDNC,m1,year) %>% 
-    dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>%
-    # mutate(m1 = recode(RDNC, !!!xr.step, .default = NA)) %>%
-    mutate(stat = case_when(!m1 ~ stat/n, TRUE ~ stat))
-
+  if (typ='Maximum') {
+    df1 <- df1 %>%
+      group_by(IID,grp,RDNC,m1,year) %>% 
+      dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) 
+  } else if (typ='Minimum') {
+    df1 <- df1 %>%
+      group_by(IID,grp,RDNC,m1,year) %>% 
+      dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val))) 
+  } else if (typ='Median') {
+    df1 <- df1 %>%
+      group_by(IID,grp,RDNC,m1,year) %>% 
+      dplyr::summarise(stat = median(Val, na.rm = TRUE), n = sum(!is.na(Val)))       
+  # } else if (typ='Sum') {
+  #   df1 <- df1 %>%
+  #     group_by(IID,grp,RDNC,m1,year) %>% 
+  #     dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val)))             
+  } else { #  (typ=="Mean")
+    df1 <- df1 %>%
+      group_by(IID,grp,RDNC,m1,year) %>% 
+      dplyr::summarise(stat = sum(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>%
+      # mutate(m1 = recode(RDNC, !!!xr.step, .default = NA)) %>%
+      mutate(stat = case_when(!m1 ~ stat/n, TRUE ~ stat))
+  }
 
   if (nrow(df1[df1$n==0,])>0) df1[df1$n==0,]$stat <- NA
   df1 <- df1 %>% mutate(statmean = mean(stat, na.rm=TRUE))

@@ -9,7 +9,7 @@ fluidPage(
       # dateRangeInput("an.rng", label = "Choose date range"),
       pickerInput(
         inputId = "pck.an",
-        label = "Choose interval:",
+        label = "1. Choose interval(s):",
         choices = NULL,
         options = list(
           `actions-box` = TRUE,
@@ -18,6 +18,7 @@ fluidPage(
         ),
         multiple = TRUE
       ),
+      selectInput('sel.an', 'Choose statistic:', c('Mean','Maximum','Median','Minimum'), selected='Mean'),
       checkboxGroupInput("chk.an", "Choose data type:", choices=NULL), br(),
       shiny::includeMarkdown("md/notes.md"),
       width=3
