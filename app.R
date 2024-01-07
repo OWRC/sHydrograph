@@ -5,12 +5,11 @@
 # general hydrograph tool
 #
 # By M.Marchildon
-# v.1.2.5
-# Mar. 2023
+# v.1.2.7
+# Jan. 2024
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
-
 
 shinyApp(
   ui <- fluidPage(
@@ -36,7 +35,7 @@ shinyApp(
         list(tags$head(HTML('<link rel="icon", href="favicon.png",type="image/png"/>'))),
         div(style="padding: 1px 0px; height: 0px", titlePanel(title="", windowTitle="sHydrograph")),
         navbarPage(
-          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.5"),
+          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.7"),
           source(file.path("ui", "ui_hydrograph.R"), local = TRUE)$value,
           source(file.path("ui", "ui_trends.R"), local = TRUE)$value,
           source(file.path("ui", "ui_stats.R"), local = TRUE)$value,
@@ -59,8 +58,8 @@ shinyApp(
     # Here are a few to try out: 1) Cannington OW99-2D (Int ID = -1261492764); 2) Aurora MW 1 (Int ID = -373572324); 
     #                            3) NVCA - Earl Rowe (IntID = -498465806); 4) Port Perry OW 5-3 (Int ID = -224406311)
     # collect_interval("[120000374,120000373,120000372]") #(120000006) #(1003537998) #(730800020) #(360000475) #(-1741125310,3) #(83764) #(148842) #("test/-847483645.json") #(-373572324) #(1099646144) #(1697639961) #(-498465806) #(-1261492764) #(-224406311) #(-2056054271,5) #(148405,5) #(283459923) #(6994) #(-847483645) #(40977)
-    # collect_interval_loc(131393) #(148720,3) #(-2087373503) # 8275
-    # collect_interval(37679) #(730800020) #("[120000006,1003537998,730800020,360000475") #(148405,5) #(148014,3) #("[148014,360000026]",3) #
+    # collect_interval_loc(1000185228) #(131393) #(148720,3) #(-2087373503) # 8275
+    # collect_interval(-970785621) #(10694) #(37679) #(730800020) #("[120000006,1003537998,730800020,360000475") #(148405,5) #(148014,3) #("[148014,360000026]",3) #
     observe({
       query <- parseQueryString(session$clientData$url_search)
       if ( !is.null(query$l) ) {
@@ -99,43 +98,6 @@ shinyApp(
         showNotification(paste0("Error: URL invalid."))
       }
     })
-      
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # qi <- "[120000374,120000373,120000372]"
-    # if ( is.na(as.numeric(qi)) ) {
-    #   if ( substr(qi,1,1) == "[" ) {
-    #     collect_interval(qi)
-    #   } else {
-    #     showNotification(paste0("Error: URL invalid.3"))
-    #   }
-    # } else {
-    #   if ( !is.null(query$t) ) {
-    #     if ( is.na(as.numeric(query$t)) ) {
-    #       showNotification(paste0("Error: URL invalid.4"))
-    #     } else {
-    #       collect_interval(strtoi(query$i),strtoi(query$t))
-    #     }
-    #   } else {
-    #     if ( !is.numeric(query$i) & substr(query$i,1,1) == "[") { ##
-    #       collect_interval(query$i) ##
-    #     } else { ##
-    #       collect_interval(strtoi(query$i))
-    #     } ##
-    #   }
-    # }      
-      
-      
-      
-      
-      
 
     source("srv/observables.R", local = TRUE)$value
     print(Sys.time() - old)

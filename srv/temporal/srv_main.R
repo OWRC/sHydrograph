@@ -49,7 +49,6 @@ observe({
   # x <- unname(unlist(v$typs))
   x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.raw,]$RDNC)])
   s <- x #[x != "Temperature (Water) - Logger (°C)" & x != "AirPressure¹ (kPa)"] # default layers to un-check
-  # if (anyNA(x)) { showNotification(paste0("unknown RDNC: ", paste(as.character(y[which(is.na(x))]), sep="' '", collapse=", ")), duration = 35) }
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) # tail(x,1))
   if (is.null(v$scrn)) hide("chkScrn")
 })

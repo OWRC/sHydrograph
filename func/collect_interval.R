@@ -25,7 +25,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     nest <- qNest(INT_ID)
     setProgress(0.5,"querying observations..")
     if ( length(nest) > 1 ) {
-      showNotification("interval nest found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
+      showNotification("interval nest/group found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
       v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") # %>%
       # # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
       # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
@@ -69,7 +69,10 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     v$v0 <- qt[1,"Val"] # first value
     v$t0 <- qt[1,"Date"]
     
-    print(paste0("available RDNC: ", paste(unique(qt$RDNC),collapse="; ")))
+    urdnc <- unique(qt$RDNC)
+    xrdnc <- xr.RDNC[as.character(urdnc)]
+    if (anyNA(xrdnc)) { showNotification(paste0("unknown RDNC: ", paste(as.character(urdnc[which(is.na(xrdnc))]), sep="' '", collapse=", ")), duration = 35) }
+    print(paste0("available RDNC: ", paste(urdnc,collapse="; ")))
     
     # ### special case: remove initial values made long before monitoring occurred (YCDB fix)
     # if ( nrow(qt) > 10 ) {

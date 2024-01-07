@@ -30,15 +30,15 @@ summary_annual <- function(df,relative=FALSE){
   
   df1$m1 <- xr.step[df1$RDNC]
 
-  if (typ='Maximum') {
+  if (typ=='Maximum') {
     df1 <- df1 %>%
       group_by(IID,grp,RDNC,m1,year) %>% 
       dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) 
-  } else if (typ='Minimum') {
+  } else if (typ=='Minimum') {
     df1 <- df1 %>%
       group_by(IID,grp,RDNC,m1,year) %>% 
       dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val))) 
-  } else if (typ='Median') {
+  } else if (typ=='Median') {
     df1 <- df1 %>%
       group_by(IID,grp,RDNC,m1,year) %>% 
       dplyr::summarise(stat = median(Val, na.rm = TRUE), n = sum(!is.na(Val)))       
