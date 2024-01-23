@@ -26,10 +26,13 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     setProgress(0.5,"querying observations..")
     if ( length(nest) > 1 ) {
       showNotification("interval nest/group found, querying..") #paste0("interval nest found, querying..\n",paste(nest)))
+      print(paste0("nest of ",length(nest)," being queried.."))
       v$meta <- bind_rows(lapply(nest, function(x) qIntInfo(x)), .id = "column_label") # %>%
       # # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_NAME_ALT1,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
       # dplyr::select(c(LOC_ID,LOC_NAME,LOC_NAME_ALT1,INT_ID,INT_NAME,INT_TYPE_CODE,LAT,LONG,X,Y,Z))
-      v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
+      # print(v$meta)
+      # v$nam <- sapply(nest, function(x) qIntInfo(x)$INT_NAME[1])
+      v$nam <- v$meta$INT_NAME
       names(v$nam) <- nest
       if (is.null(jsonfp)) {
         qt <- qTemporal_nest(nest,vTemporal)
@@ -37,8 +40,9 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         qt <- qTemporal_json(jsonfp)
       }
       if (is.null(qt)) {
-        showNotification("interval nest too large, querying selected location only")
+        showNotification("interval nest too large, querying only selected interval")
         nest <- c(INT_ID)
+        v$meta <- qIntInfo(INT_ID)
       } else {
         v$nam <- v$nam[names(v$nam) %in% unique(qt$IID)]
         v$title <- paste(unname(unlist(v$nam)), collapse = '; ')          
