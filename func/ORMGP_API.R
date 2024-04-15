@@ -1,6 +1,6 @@
 
 
-iintrp <- 'http://golang.oakridgeswater.ca:8080/pmet/%f/%f'
+iintrp <- 'http://fews.oakridgeswater.ca:8080/dymetp/%f/%f'
 
 
 qInterp <- function(longitude,latitude){
@@ -17,7 +17,7 @@ qInterp <- function(longitude,latitude){
     },
     finally={}
   )
-  if (out=="NA") return(NULL)
+  if (length(out)==1 && out=="NA") return(NULL)
   out[out==-999] <- NA
   out$Date <- as.Date(out$Date)
   # out$Date <- as.POSIXct(out$Date, tz="America/New_York")
