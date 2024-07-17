@@ -4,10 +4,12 @@ iintrp <- 'http://fews.oakridgeswater.ca:8080/dymetp/%f/%f'
 
 
 qInterp <- function(longitude,latitude){
+  if (is.null(longitude) | is.null(longitude)) return(NULL)
+  url <- sprintf(iintrp,latitude,longitude)
+  print(url)
   out <- tryCatch(
     {
-      print(sprintf(iintrp,latitude,longitude))
-      fromJSON(sprintf(iintrp,latitude,longitude))
+      fromJSON(print(url))
     },
     error=function(cond) {
       return(NULL)
