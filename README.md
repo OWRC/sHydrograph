@@ -11,6 +11,12 @@ Mason Marchildon P.Eng M.ASc, Hydrologist with the [Oak Ridges Moraine Groundwat
 
 ## Release notes
 
+**version 1.2.9 - October 2024**
+
+- added seasonal breakout/outlier detection
+- added resolution control
+- brought back air pressure
+
 **version 0.8 - April 2021**
 
 * added (local) DB improvements

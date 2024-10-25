@@ -42,7 +42,7 @@ df.filtered <- reactive({
       mutate(RDNC = xr.NLong[as.character(RDNC)]) %>%
       dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
       group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
-      mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
+      dplyr::mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
       spread(key=RDNC, value=Val) %>%
       dplyr::select(-one_of(c('row_id'))) #,'Rainfall','Snowmelt')))
 
@@ -69,7 +69,7 @@ df.filtered <- reactive({
       mutate(RDNC = xr.NLong[as.character(RDNC)]) %>%
       dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
       group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
-      mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
+      dplyr::mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
       spread(key=RDNC, value=Val) %>%
       dplyr::select(-one_of(c('row_id'))) #,'Rainfall','Snowmelt')))
     
@@ -98,7 +98,7 @@ df.filtered <- reactive({
 #   sdf <- v$df[v$df$RDNC %in% xs  &  v$df$IID %in% iids,] %>%
 #     dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
 #     group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
-#     mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
+#     dplyr::mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
 #     spread(key=RDNC, value=Val) %>%
 #     dplyr::select(-one_of(c('row_id','Rainfall','Snowmelt')))
 #     
@@ -119,7 +119,7 @@ df.filtered <- reactive({
 # }
 
 
-output$tabiids <- renderDataTable(
+output$tabiids <- DT::renderDT(
   {if (!is.null(v$meta)){
     v$meta #%>%
       # formatPercentage('Quality', 0) %>%
@@ -132,11 +132,11 @@ output$tabiids <- renderDataTable(
                  searching=FALSE)
 )
 
-output$tabts <- renderDataTable(
+output$tabts <- DT::renderDT(
   { if (!is.null(v$raw)) df.filtered() }, 
   options = list(scrollY='100%', scrollX=TRUE,
-                 lengthMenu = c(5, 30, 100, 365, 3652),
-                 pageLength = 30,
+                 lengthMenu = c(5, 10, 30, 100, 365, 3652),
+                 pageLength = 10,
                  searching=FALSE)
 )
 

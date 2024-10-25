@@ -118,26 +118,26 @@ extreme_rank <- function(df,iid,ylab, mnx='max'){
   
   if (mnx=='min') {
     df <- df %>% dplyr::summarise(stat = min(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
-    ttl <- paste0(iid,'\nranked anomalies of extreme annual minima')
+    sttl <- 'ranked anomalies of extreme annual minima'
   } else if (mnx=='max') {
     df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
-    ttl <- paste0(iid,'\nranked anomalies of extreme annual maxima')
+    sttl <- 'ranked anomalies of extreme annual maxima'
   } else if (mnx=='mean') {
     df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
-    ttl <- paste0(iid,'\nranked anomalies of annual means')
+    sttl <- 'ranked anomalies of annual means'
   } else{
     df <- df %>% dplyr::summarise(stat = max(Val, na.rm = TRUE), n = sum(!is.na(Val))) %>% arrange(year)
-    ttl <- paste0(iid,'\nranked anomalies of annual medians')
+    sttl <- 'ranked anomalies of annual medians'
   }
   
   # Mann-Kendall test for trend
   MK = MannKendall(df$stat)
   if (MK$sl[1] < 0.001) {
-    trnd <- paste0('Mann-Kendall tau: ',round(MK$tau[1],3),' (p < 0.001)')
+    sttl <- paste0(sttl,' - Mann-Kendall tau: ',round(MK$tau[1],3),' (p < 0.001)')
   } else if (MK$sl[1] < 0.05) {
-    trnd <- paste0('Mann-Kendall tau: ',round(MK$tau[1],3),' (p = ',round(MK$sl[1],3),')')
+    trnd <- paste0(sttl,' - Mann-Kendall tau: ',round(MK$tau[1],3),' (p = ',round(MK$sl[1],3),')')
   } else {
-    trnd <- 'no significant trend'
+    trnd <- paste0(sttl,' - no significant trend')
   }
   
   if (nrow(df[df$n==0,])>0) df[df$n==0,]$stat <- NA # clean missing
@@ -152,7 +152,7 @@ extreme_rank <- function(df,iid,ylab, mnx='max'){
     geom_bar(stat="identity") + 
     geom_text(aes(label=year),angle = 90,hjust=1.1) +
     scale_fill_binned(type = "viridis") + 
-    labs(y=ylab, title=paste0(ttl,' - ',trnd)) +
+    labs(y=ylab, title=iid, subtitle=sttl) +
     ylim(c(1.1*min(df$stat),NA))
 }
 
@@ -176,7 +176,7 @@ output$ax.h <- renderPlot({
       withProgress(message = 'rendering plots..', value = 0.1, {extreme_frequency(df, xlab, dist=mdl, mnx=mnx) + ggtitle(iid)})
     }
   })
-})
+}, res=ggres)
 
 output$ax.rnk <- renderPlot({
   req(xl <- input$radio.ax)
@@ -190,7 +190,7 @@ output$ax.rnk <- renderPlot({
       extreme_rank(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), iid, xlab, mnx=mnx)
     }
   ))
-})
+}, res=ggres)
 
 output$ax.dist <- renderPlot({
   req(xl <- input$radio.ax)
@@ -203,7 +203,7 @@ output$ax.dist <- renderPlot({
       withProgress(message = 'rendering distribution..', value = 0.8, {extreme_density(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), xlab, mnx=mnx)})
     }
   )
-})
+}, res=ggres)
 
 output$ax.hist <- renderPlot({
   req(iid <- input$int.ax)
@@ -217,4 +217,4 @@ output$ax.hist <- renderPlot({
       withProgress(message = 'rendering distribution..', value = 0.8, {extreme_histogram(remove.outliers(v$df[v$df$RDNC==xs & v$df$IID==iid,]), mnx=mnx)})
     }
   )
-})
+}, res=ggres)

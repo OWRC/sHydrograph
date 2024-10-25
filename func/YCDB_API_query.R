@@ -8,7 +8,7 @@
 data.api <- 'http://golang.oakridgeswater.ca:8080/'
 
 ###########################################################################################
-## API addresses
+## API handles
 ###########################################################################################
 idbc <- paste0(data.api,'intgend/%d/%s')
 idbcs <- paste0(data.api,'intgend/%d/[%s]')

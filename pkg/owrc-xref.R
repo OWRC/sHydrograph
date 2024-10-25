@@ -26,7 +26,7 @@ xr.RDNC <- c("447"="Pump",
              "1001"="StrmFlw",
              "Rf"="iRainfall",
              "Sm"="iSnowmelt",
-             "Pa"="iAirPressure") #, #"611"="Wlvlx", "612"="Wlvln", 
+             "Pa"="iAirPressure") #, #"611"="Wlvlx", "612"="Wlvln",
 
 xr.Nindx <- setNames(names(xr.RDNC), unname(xr.RDNC)) #reverses above named list
 

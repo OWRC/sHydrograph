@@ -103,7 +103,7 @@ output$distr.gam <- renderPlot({
       cowplot::plot_grid(plotlist=plts, ncol=1, align='v', rel_heights = c(5,2))      
     }
   }
-})
+}, res=ggres)
 
 
 # output$distr.naive <- renderPlot({

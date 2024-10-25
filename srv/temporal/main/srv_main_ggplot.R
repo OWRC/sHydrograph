@@ -34,4 +34,4 @@ output$plt.print <- renderPlot({
         facet_wrap(~grp, ncol=1, scales = "free_y", strip.position = "left")
     })
   }
-})
+}, res=ggres)

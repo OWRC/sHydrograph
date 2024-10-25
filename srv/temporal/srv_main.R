@@ -48,7 +48,7 @@ observeEvent(input$raw.but.10yr, { zoom.to.n.years(10) })
 observe({
   # x <- unname(unlist(v$typs))
   x <- unname(xr.NLong[unique(v$df[v$df$IID %in% input$pck.raw,]$RDNC)])
-  s <- x #[x != "Temperature (Water) - Logger (°C)" & x != "AirPressure¹ (kPa)"] # default layers to un-check
+  s <- x[x != "Temperature (Water) - Logger (°C)" & x != "AirPressure¹ (kPa)"] # default layers to un-check
   updateCheckboxGroupInput(session, "chkData", choices=x, select=s) # tail(x,1))
   if (is.null(v$scrn)) hide("chkScrn")
 })
@@ -94,7 +94,8 @@ output$tabsum <- renderFormattable({
                        n = sum(!is.na(Val)),
                        .groups = "keep") %>%
       ungroup() %>%
-      mutate_at(vars(-c(IID,RDNC,n)), funs(round(., 3))) %>%
+      # mutate_at(vars(-c(IID,RDNC,n)), funs(round(., 3))) %>%
+      mutate_at(vars(-c(IID,RDNC,n)), list(~round(., 3))) %>%
       formattable()
   }
 })

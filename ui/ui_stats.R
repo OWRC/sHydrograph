@@ -5,7 +5,7 @@ navbarMenu("Statistics",
            tabPanel("Annual extremes",
                     source(file.path("ui/stats", "ui_extreme.R"), local = TRUE)$value
            ),
-           tabPanel("Annual variability",
+           tabPanel("Seasonal variability",
                     source(file.path("ui/stats", "ui_distr_gam.R"), local = TRUE)$value
            ),
            tabPanel("Monthly densities",

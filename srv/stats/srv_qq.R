@@ -80,7 +80,7 @@ output$distr.qq.distr <- renderPlot({
       scale_colour_manual(values = c(median = "black")) +
       labs(title=paste0(iid,": distribution"),x=xl,y=NULL)
   }
-})
+}, res=ggres)
 
 output$distr.qq <- renderPlot({
   req(xl <- input$radio.qq)
@@ -95,4 +95,4 @@ output$distr.qq <- renderPlot({
         stat_qq_line(distribution = qdistr()) +
         labs(title=paste0(iid,": Q-Q plot"),y=xl,x=NULL)
   }
-})
+}, res=ggres)

@@ -12,14 +12,14 @@ qxts_series <- reactive({
     spread(key=RDNC, value=Val)
   
   if ( dim(mdf)[2] < 2 ) { mdf <- NULL }
-  
+
   sdf <- v$df[v$df$RDNC %in% xs  &  v$df$IID %in% iids,] %>%
     dplyr::select(-one_of(c('RDTC','unit','grp'))) %>%
     group_by_at(vars(-Val)) %>%  # group by everything other than the value column. (from: https://github.com/tidyverse/tidyr/issues/426)
-    mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
+    dplyr::mutate(row_id=1:n()) %>% ungroup() %>% # build group index (from: https://github.com/tidyverse/tidyr/issues/426)
     spread(key=RDNC, value=Val) %>%
     dplyr::select(-one_of(c('row_id','iRainfall','iSnowmelt','iAirPressure')))
-  
+
   if ( dim(sdf)[2] < 3 ) {
     sdf <- NULL
   } else {
@@ -102,7 +102,7 @@ output$plt.raw <- renderDygraph({
       spc <- strrep(" ",50)
       spcs <- ''
       for (p in names(v$scrn)) {
-        dg <- dg %>% dyLimit(v$scrn[[p]], label=paste0(spcs,p), color = "grey22")
+        dg <- dg %>% dyLimit(v$scrn[[p]], label=paste0(spcs,p), color = "grey22", labelLoc="right")
         spcs = paste0(spcs,spc)
       }
     }

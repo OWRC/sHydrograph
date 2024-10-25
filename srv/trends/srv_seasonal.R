@@ -55,4 +55,4 @@ output$plt.se <- renderPlot({
     
     return(p)
   }
-})
+}, res=ggres)

@@ -46,4 +46,4 @@ output$distr.m.h <- renderPlot({
         ) +
         labs(title=iid,x=xl) 
   }
-})
+}, res=ggres)

@@ -102,7 +102,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
     v$DTe <- max(v$df$Date) 
    
     if (vTemporal!=3) {
-      setProgress(0.6,"interpolating to location..")
+      setProgress(0.6,"interpolating climate to location..")
       dfInterp <- qInterp(v$meta$LONG[1],v$meta$LAT[1]) 
       if (!is.null(dfInterp)) {
         dfInterp <- dfInterp %>% 

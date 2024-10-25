@@ -86,7 +86,7 @@ output$plt.an.tot <- renderPlot({
   # if (!is.null(v$df)){
   #   summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],])
   # }
-})
+}, res=ggres)
 
 output$plt.an.diff <- renderPlot({
   if (!is.null(v$df)) summary_annual(v$df,TRUE)
@@ -94,4 +94,4 @@ output$plt.an.diff <- renderPlot({
   # if (!is.null(v$df)){
   #   summary_annual(v$df[v$df$Date >= rng[[1]] & v$df$Date <= rng[[2]],],TRUE)
   # }
-})
+}, res=ggres)

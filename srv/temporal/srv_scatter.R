@@ -64,4 +64,4 @@ output$plt.sca <- renderPlot ({
   } else {
     p
   }
-})
+}, res=ggres)

@@ -2,7 +2,7 @@ fluidPage(
   title = 'sHydrograph',
   fluidRow(
     htmlOutput("hdr.raw"),
-    h3('daily-aggregated data shown')
+    h4('(daily-aggregated data shown)')
   ), hr(),
   fluidRow(
     sidebarPanel(
@@ -51,8 +51,8 @@ fluidPage(
                            fluidRow(formattableOutput('tabsum'))
                   ),
                   tabPanel("Printable", value='gg', br(),
-                           fluidRow(plotOutput("plt.print", height = "600px")), 
-                           fluidRow(shiny::includeMarkdown("md/rightclick.md"))
+                           fluidRow(shiny::includeMarkdown("md/rightclick.md")),
+                           fluidRow(plotOutput("plt.print", height = "600px"))
                   ),
                   tabPanel("Map", value='leaf', br(),
                            fluidRow(leafletOutput("main.map", height = "600px"))

@@ -5,8 +5,8 @@
 # general hydrograph tool
 #
 # By M.Marchildon
-# v.1.2.7
-# Jan. 2024
+# v.1.2.9
+# Oct. 2024
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
@@ -16,6 +16,7 @@ shinyApp(
     useShinyjs(),
     tags$head(includeCSS("pkg/styles.css")),
     tags$head(tags$script(HTML(jscode.mup))),
+    tags$head( tags$style(type="text/css", "text {font-family: sans-serif}")),
     tags$div(tags$style(HTML( ".dropdown-menu{z-index:10000 !important;}"))), # fix hidden drop-downs
     inlineCSS(appLoad),
     
@@ -48,6 +49,7 @@ shinyApp(
   
   server <- function(input, output, session){
     old <- Sys.time() 
+    ggres <<- 128 # ggplot resolution (default=72)
     
     ###################
     ### Parameters & methods:

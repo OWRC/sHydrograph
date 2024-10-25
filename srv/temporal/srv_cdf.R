@@ -37,4 +37,4 @@ output$plt.cdf <- renderPlot({
       p + facet_wrap(~grp, ncol=2, scales = "free", strip.position = "left") + coord_flip()
     })
   }
-})
+}, res=ggres)

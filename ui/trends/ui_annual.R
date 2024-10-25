@@ -20,13 +20,18 @@ fluidPage(
       ),
       selectInput('sel.an', 'Choose statistic:', c('Mean','Maximum','Median','Minimum'), selected='Mean'),
       checkboxGroupInput("chk.an", "Choose data type:", choices=NULL), br(),
+      shiny::includeMarkdown("md/rightclick.md"), br(),
       shiny::includeMarkdown("md/notes.md"),
       width=3
     ),
     mainPanel(
-      plotOutput("plt.an.tot"), hr(),
-      plotOutput("plt.an.diff"), br(),
-      shiny::includeMarkdown("md/rightclick.md") 
+      h4("Absolute"),
+      fluidRow(plotOutput("plt.an.tot", height = "600px")), hr(),
+      # plotOutput("plt.an.tot")
+      h4("Realtive"),
+      # plotOutput("plt.an.diff"), br(),
+      fluidRow(plotOutput("plt.an.diff", height = "600px"))
+      # shiny::includeMarkdown("md/rightclick.md") 
     )
   )
 )
