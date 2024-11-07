@@ -16,7 +16,7 @@ shinyApp(
     useShinyjs(),
     tags$head(includeCSS("pkg/styles.css")),
     tags$head(tags$script(HTML(jscode.mup))),
-    tags$head( tags$style(type="text/css", "text {font-family: sans-serif}")),
+    tags$head(tags$style(type="text/css", "text {font-family: sans-serif}")),
     tags$div(tags$style(HTML( ".dropdown-menu{z-index:10000 !important;}"))), # fix hidden drop-downs
     inlineCSS(appLoad),
     
