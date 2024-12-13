@@ -121,6 +121,7 @@ collect_interval <- function(INT_ID,vTemporal=2) {
         # print(head(v$raw, 3))
         # print(head(v$df, 3))
         # print(head(dfInterp, 3))
+        # print(unique(dfInterp$RDNC))
         v$df <- rbind(v$df, dfInterp) #%>% arrange(Date)
         # v$raw <- rbind(v$raw, dfInterp)
         # print(nrow(v$raw))

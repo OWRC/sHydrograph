@@ -5,7 +5,7 @@ pltcol <- c("#ef8a62","#43a2ca")
 xr.Ignore <- c(163,369,449,
                608,609,611,612,633,645,
                748,757,758,760,761,762,763,764,765,
-               827,851,860,861,
+               827,829,831,851,860,861,
                10854,10859,70813,
                70868,70872,70899,70903,70977,
                71025,71026,71207,71208,71209,71212,71213,71350)
@@ -44,7 +44,7 @@ xr.NLong <- c(
     "WtrLvl.s"="Water Level - Manual - Static (masl)",
     "StrmFlw"="Stream flow (cms)",
     "Temp"="Temperature (Water) - Logger (°C)",
-    "Pump"="Production (m3/d)",
+    "Pump"="Production (m³/d)",
     "Precip"="Precipitation (mm)",
     "iRainfall"="Rainfall¹ (mm)",
     "iSnowmelt"="Snowmelt¹ (mm)",
