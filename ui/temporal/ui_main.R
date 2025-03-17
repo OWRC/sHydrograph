@@ -46,8 +46,8 @@ fluidPage(
                   tabPanel("Quick viewer", value='dyg', br(), 
                            fluidRow(shiny::includeMarkdown("md/rawview.md")),
                            # fluidRow(dygraphOutput("plt.raw")), 
-                           fluidRow(htmlOutput("plt.raw")), 
-                           br(), textOutput("plt.raw.labelsDiv"), # places dygraph legend
+                           textOutput("plt.raw.labelsDiv"), # places dygraph legend
+                           br(), fluidRow(htmlOutput("plt.raw")), 
                            br(), htmlOutput('info.main'),
                            fluidRow(formattableOutput('tabsum'))
                   ),

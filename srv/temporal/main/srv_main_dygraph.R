@@ -54,11 +54,11 @@ qxts_series <- reactive({
 })
 
 
-# y2.add <- function(dg, colnam, legendnam, colour) {
-#   if (length(colnam)>1) colnam=colnam[1] #paste(colnam, collapse = '')
-#   dg %>% dyBarSeries(colnam, axis = 'y2', color = colour, label = legendnam)
-#   # dySeries(colnam, axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = legendnam)
-# }
+y2.add <- function(dg, colnam, legendnam, colour) {
+  if (length(colnam)>1) colnam=colnam[1] #paste(colnam, collapse = '')
+  dg %>% dyBarSeries(colnam, axis = 'y2', color = colour, label = legendnam)
+  # dySeries(colnam, axis = 'y2', stepPlot = TRUE, fillGraph = TRUE, color = "#4daf4a", label = legendnam)
+}
 
 # output$plt.raw <- renderDygraph({
 output$plt.raw <- renderUI({
@@ -71,9 +71,10 @@ output$plt.raw <- renderUI({
     
     pp <- grep("Pump", cn, value = TRUE)
     
-    dg <- dygraph(qxts[, !(cn %in% c('iRainfall','iAirPressure','iSnowmelt',pp))], group="dymain", width='100%', height='300px') %>%
+    # dg <- dygraph(qxts[, !(cn %in% c('iRainfall','iAirPressure','iSnowmelt',pp))], group="dymain", width='100%', height='300px') %>%
+    dg <- dygraph(qxts[, !(cn %in% c('iAirPressure',pp))], group="dymain", width='100%', height='300px') %>%
       dyLegend(labelsDiv = "plt.raw.labelsDiv") %>%
-      dyRangeSelector(height=20, retainDateWindow=TRUE) %>%
+      dyRangeSelector(height=30, retainDateWindow=TRUE) %>%
       dyOptions(axisLineWidth = 1.5, 
                 connectSeparatedPoints = TRUE, 
                 drawPoints = TRUE, 
@@ -98,49 +99,68 @@ output$plt.raw <- renderUI({
     }
     
     qp <- qxts[, cn %in% pp]
+    qp$dummy<-NA
     dp <- NULL
     if (length(colnames(qp))>0) {
       dp <- dygraph(qp, group="dymain", width='100%', height='200px') %>% 
         dyBarChart() %>% 
-        dyRangeSelector(height=0, retainDateWindow=TRUE) %>%
-        dyLegend(width=500)      
+        # dyRangeSelector(height=0, retainDateWindow=TRUE) %>%
+        dyLegend(width=600)
+      
+      dp <- y2.add(dp,"dummy",'dummy',"#ffffff00") # needed to trick the dygraph to think theres a y2 axis, used to align with above polt
+      dp <- dp %>%
+        dyAxis('y2',
+               independentTicks = TRUE,
+               drawGrid = FALSE,
+               valueRange = c(0, 0))
     }
     
-    qm <- qxts[, cn %in% c('iRainfall','iAirPressure','iSnowmelt')]
-    if (length(colnames(qm))>0) {
-      dm <- NULL
-      if ("iRainfall" %in% cn & "iSnowmelt" %in% cn) {
-        dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
-          dyStackedBarGroup(c('iRainfall','iSnowmelt'), color = c('#1f78b4','#a6cee3'), label=c('Rainfall', 'Snowmelt'))
-      } else if ("iRainfall" %in% cn) {
-        dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
-          dyBarSeries('iRainfall', color = '#1f78b4', label='Rainfall')
-      } else if ("iSnowmelt" %in% cn) {
-        dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
-          dyBarSeries('iSnowmelt', color = '#a6cee3', label='Snowmelt')
-      }
-      
-      if ("iAirPressure" %in% cn) {
-        if (is.null(dm)) {
-          dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
-            dySeries('iAirPressure', color = 'darkred', label = 'Air Pressure')
-        } else {
-          dm <- dm %>% 
-            dySeries('iAirPressure',axis='y2', color = 'darkred', label = 'Air Pressure') %>%
-            dyAxis('y2', independentTicks = TRUE, drawGrid = FALSE, valueRange = c(90, 105))
-        }
-      }
-      
-      if (!is.null(dm)) {
-        dm <- dm %>%
-          dyRangeSelector(height=0, retainDateWindow=TRUE) %>%
-          dyLegend(width=500)        
-      }
-    } else {
-      dm <- NULL
-    }
+    if ("iSnowmelt" %in% cn) { dg <- y2.add(dg,"iSnowmelt",'snowmelt',"#a6cee3") }
+    if ("iRainfall" %in% cn) { dg <- y2.add(dg,"iRainfall",'rainfall',"#1f78b4") }
+    dg <- dg %>%     
+        dyAxis('y2',
+               independentTicks = TRUE,
+               drawGrid = FALSE,
+               valueRange = c(150, 0))
     
-    htmltools::browsable(htmltools::tagList(list(dg,dp,dm)))
+    htmltools::browsable(htmltools::tagList(list(dg,dp)))
+
+    
+    # qm <- qxts[, cn %in% c('iRainfall','iAirPressure','iSnowmelt')]
+    # if (length(colnames(qm))>0) {
+    #   dm <- NULL
+    #   if ("iRainfall" %in% cn & "iSnowmelt" %in% cn) {
+    #     dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
+    #       dyStackedBarGroup(c('iRainfall','iSnowmelt'), color = c('#1f78b4','#a6cee3'), label=c('Rainfall', 'Snowmelt'))
+    #   } else if ("iRainfall" %in% cn) {
+    #     dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
+    #       dyBarSeries('iRainfall', color = '#1f78b4', label='Rainfall')
+    #   } else if ("iSnowmelt" %in% cn) {
+    #     dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
+    #       dyBarSeries('iSnowmelt', color = '#a6cee3', label='Snowmelt')
+    #   }
+    #   
+    #   if ("iAirPressure" %in% cn) {
+    #     if (is.null(dm)) {
+    #       dm <- dygraph(qm, group="dymain", width='100%', height='100px') %>%
+    #         dySeries('iAirPressure', color = 'darkred', label = 'Air Pressure')
+    #     } else {
+    #       dm <- dm %>% 
+    #         dySeries('iAirPressure',axis='y2', color = 'darkred', label = 'Air Pressure') %>%
+    #         dyAxis('y2', independentTicks = TRUE, drawGrid = FALSE, valueRange = c(90, 105))
+    #     }
+    #   }
+    #   
+    #   if (!is.null(dm)) {
+    #     dm <- dm %>%
+    #       dyRangeSelector(height=0, retainDateWindow=TRUE) %>%
+    #       dyLegend(width=500)        
+    #   }
+    # } else {
+    #   dm <- NULL
+    # }
+    # 
+    # htmltools::browsable(htmltools::tagList(list(dg,dp,dm)))
     
     
     
