@@ -26,6 +26,7 @@ qInterp <- function(longitude,latitude){
   url <- sprintf(iintrpd,latitude,longitude)
   print(url)
   dfd <- getCDS(url)
+  if (length(dfd)==0) return(NULL)
   if (length(dfd)==1 && dfd=="NA") return(NULL)
   dfd$Date <- as.Date(dfd$Date)
 
