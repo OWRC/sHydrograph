@@ -5,7 +5,7 @@
 # Nov, 2023
 ##########################################################
 
-data.api <- 'http://golang.oakridgeswater.ca:8080/'
+data.api <- 'http://data.oakridgeswater.ca:8080/'
 
 ###########################################################################################
 ## API handles
@@ -14,7 +14,7 @@ idbc <- paste0(data.api,'intgend/%d/%s')
 idbcs <- paste0(data.api,'intgend/%d/[%s]')
 iscreen <- paste0(data.api,'intscreen/%d')
 inest <- paste0(data.api,'intnest/%d')
-iinfo <- paste0(data.api,'intinfo/%s')
+iinfo <- paste0(data.api,'intlocinfo/%s') # 'intinfo/%s')
 linfo <- paste0(data.api,'locinfo/%d')
 
 

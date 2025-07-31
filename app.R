@@ -5,8 +5,8 @@
 # general hydrograph tool
 #
 # By M.Marchildon
-# v.1.2.11
-# Mar. 2025
+# v.1.2.12
+# Apr. 2025
 ##########################################################
 
 source("pkg/packages.R", local = TRUE)
@@ -36,7 +36,7 @@ shinyApp(
         list(tags$head(HTML('<link rel="icon", href="favicon.png",type="image/png"/>'))),
         div(style="padding: 1px 0px; height: 0px", titlePanel(title="", windowTitle="sHydrograph")),
         navbarPage(
-          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.10"),
+          title=div(img(src="ORMGP_logo_no_text_short.png", height=11), "sHydrograph v1.2.12"),
           source(file.path("ui", "ui_hydrograph.R"), local = TRUE)$value,
           source(file.path("ui", "ui_trends.R"), local = TRUE)$value,
           source(file.path("ui", "ui_stats.R"), local = TRUE)$value,
